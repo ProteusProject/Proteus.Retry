@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Proteus.Retry
+﻿namespace Proteus.Retry.Test
 {
-    public class MyClass
+    public class TestObject
     {
         public string StringResult;
         public int IntResult;
@@ -30,20 +25,6 @@ namespace Proteus.Retry
         {
             VoidReturnInvokeCount++;
             SetProperties(theInt, theString);
-        }
-    }
-
-    public class Retry
-    {
-        public TReturn Invoke<TReturn>(Func<TReturn> func)
-        {
-            return func.Invoke();
-        }
-
-        public void Invoke(Action action)
-        {
-            action.Invoke();
-            action.Invoke();
         }
     }
 }

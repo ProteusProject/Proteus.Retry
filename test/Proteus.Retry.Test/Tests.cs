@@ -14,7 +14,7 @@ namespace Proteus.Retry.Test
         public void Test()
         {
 
-            var instance = new MyClass();
+            var instance = new TestObject();
 
             var retry = new Retry();
 
