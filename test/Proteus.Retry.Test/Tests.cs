@@ -16,7 +16,7 @@ namespace Proteus.Retry.Test
 
             var instance = new TestObject();
 
-            var retry = new Retry();
+            var retry = new Retry(new RetryPolicy() {MaxRetries = 2});
 
             var result = retry.Invoke(() => instance.IntReturningMethod(1, "func invoked"));
 

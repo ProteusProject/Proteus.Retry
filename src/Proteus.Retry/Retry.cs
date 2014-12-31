@@ -4,6 +4,13 @@ namespace Proteus.Retry
 {
     public class Retry
     {
+        private readonly RetryPolicy _policy;
+
+        public Retry(RetryPolicy policy)
+        {
+            _policy = policy;
+        }
+
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
             return func.Invoke();
@@ -11,8 +18,17 @@ namespace Proteus.Retry
 
         public void Invoke(Action action)
         {
-            action.Invoke();
-            action.Invoke();
+            for (int i = 0; i < _policy.MaxRetries; i++)
+            {
+                try
+                {
+                    action.Invoke();
+                }
+                catch (Exception)
+                {
+                    //swallow
+                }
+            }
         }
     }
 }
