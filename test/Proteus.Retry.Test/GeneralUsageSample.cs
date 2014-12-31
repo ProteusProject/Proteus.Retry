@@ -8,15 +8,14 @@ using NUnit.Framework;
 namespace Proteus.Retry.Test
 {
     [TestFixture]
-    public class Tests
+    public class GeneralUsageSample
     {
         [Test]
-        public void Test()
+        public void GeneralScenario1()
         {
-
             var instance = new TestObject();
 
-            var retry = new Retry(new RetryPolicy() {MaxRetries = 2});
+            var retry = new Retry(new RetryPolicy() { MaxRetries = 2 });
 
             var result = retry.Invoke(() => instance.IntReturningMethod(1, "func invoked"));
 
@@ -24,7 +23,7 @@ namespace Proteus.Retry.Test
             Assert.That(instance.IntResult, Is.EqualTo(1));
             Assert.That(instance.StringResult, Is.EqualTo("func invoked"));
 
-            retry.Invoke(() => instance.VoidReturningMethod(2, "action invoked"));
+            retry.Invoke(() => instance.VoidReturningMethodThatThrowsOnFirstInvocation(2, "action invoked"));
 
             Assert.That(instance.IntResult, Is.EqualTo(2));
             Assert.That(instance.StringResult, Is.EqualTo("action invoked"));

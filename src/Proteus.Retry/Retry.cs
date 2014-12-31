@@ -23,10 +23,14 @@ namespace Proteus.Retry
                 try
                 {
                     action.Invoke();
+
+                    //after any successful invocation of the action, bail out of the for-loop
+                    break;
                 }
                 catch (Exception)
                 {
-                    //swallow
+                    //swallow!
+                    //TODO: only swallow expected exceptions; otherwise throw if unexpected
                 }
             }
         }

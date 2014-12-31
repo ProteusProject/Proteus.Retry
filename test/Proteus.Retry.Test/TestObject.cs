@@ -1,4 +1,6 @@
-﻿namespace Proteus.Retry.Test
+﻿using System;
+
+namespace Proteus.Retry.Test
 {
     public class TestObject
     {
@@ -21,8 +23,15 @@
             IntResult = theInt;
         }
 
-        public void VoidReturningMethod(int theInt, string theString)
+        public void VoidReturningMethodThatThrowsOnFirstInvocation(int theInt, string theString)
         {
+
+            if (VoidReturnInvokeCount ==0)
+            {
+                VoidReturnInvokeCount++;
+                throw new Exception();
+            }
+
             VoidReturnInvokeCount++;
             SetProperties(theInt, theString);
         }
