@@ -32,5 +32,22 @@ namespace Proteus.Retry.Test
             Assert.That(instance.VoidReturnInvokeCount, Is.EqualTo(2));
 
         }
+
+        [Test]
+        public void GeneralScenario2()
+        {
+            var instance = new TestObject();
+
+            var retry = new Retry(new RetryPolicy() { MaxRetries = 1 });
+
+            retry.Invoke(() => instance.VoidReturningMethodThatThrowsOnFirstInvocation(2, "action invoked"));
+
+            Assert.That(instance.IntResult, Is.EqualTo(2));
+            Assert.That(instance.StringResult, Is.EqualTo("action invoked"));
+
+            //Assert.That(instance.IntReturnInvokeCount, Is.EqualTo(1));
+            Assert.That(instance.VoidReturnInvokeCount, Is.EqualTo(2));
+
+        }
     }
 }
