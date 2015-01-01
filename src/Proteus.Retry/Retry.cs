@@ -62,18 +62,16 @@ namespace Proteus.Retry
                     //after _any_ successful invocation of the action, bail out of the for-loop
                     return;
                 }
-                //delegate invoke will ALWAYS toss TargetInvocationException,
-                // wrapping the underlying 'real' exception as its inner
-                catch (TargetInvocationException exception)
+                catch (Exception exception)
                 {
-                    if (IsRetriableException(exception.InnerException))
+                    if (IsRetriableException(exception))
                     {
                         //swallow because we want/need to remain intact for next retry attempt
-                        _innerExceptionHistory.Add(exception.InnerException);
+                        _innerExceptionHistory.Add(exception);
                     }
                     else
                     {
-                        throw exception.InnerException;
+                        throw;
                     }
                 }
 
