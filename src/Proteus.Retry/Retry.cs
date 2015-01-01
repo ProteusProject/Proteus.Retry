@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Proteus.Retry
 {
@@ -45,20 +46,24 @@ namespace Proteus.Retry
                     //after any successful invocation of the action, bail out of the for-loop
                     return;
                 }
-                catch (Exception)
+                catch (TargetInvocationException exception)
                 {
-                    //swallow!
-
-                    //TODO: only swallow expected exceptions; otherwise throw (eventually)
-                    //throw;
+                    if (_policy.IsRetriableException(exception.InnerException))
+                    {
+                        //swallow!
+                    }
+                    else
+                    {
+                        throw exception.InnerException;
+                    }
                 }
-                
+
                 i++;
 
             } while (i <= _policy.MaxRetries);
 
 
-            //should NEVER get here, but this line is needed to keep the compiler happy (for now)
+            //should NEVER get here, but this line is needed to keep the compiler happy
             returnValue = default(TReturn);
         }
     }

@@ -8,7 +8,7 @@ namespace Proteus.Retry
     public class RetryPolicy
     {
         private int _maxRetries;
-        private IList<Type> _retriableExceptions = new List<Type>();
+        private readonly IList<Type> _retriableExceptions = new List<Type>();
 
         public int MaxRetries
         {
@@ -22,10 +22,10 @@ namespace Proteus.Retry
 
         public IEnumerable<Type> RetriableExceptions
         {
-            get { return new ReadOnlyCollection<Type> (_retriableExceptions); }
+            get { return new ReadOnlyCollection<Type>(_retriableExceptions); }
         }
 
-        private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception) 
+        private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception)
         {
             if (!isValidFunc.Invoke(value))
             {
@@ -33,9 +33,20 @@ namespace Proteus.Retry
             }
         }
 
-        public void AddRetriableException<TException>() where TException: Exception
+        public void AddRetriableException<TException>() where TException : Exception
         {
             _retriableExceptions.Add(typeof(TException));
+        }
+
+        public bool IsRetriableException<TException>() where TException : Exception
+        {
+            return _retriableExceptions.Contains(typeof (TException));
+        }
+
+        public bool IsRetriableException(Exception exception)
+        {
+            return _retriableExceptions.Contains(exception.GetType());
+
         }
     }
 }

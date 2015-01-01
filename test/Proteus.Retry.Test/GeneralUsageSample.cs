@@ -15,7 +15,10 @@ namespace Proteus.Retry.Test
         {
             var instance = new TestObject();
 
-            var retry = new Retry(new RetryPolicy() {MaxRetries = 20});
+            var policy = new RetryPolicy() {MaxRetries = 20};
+            policy.AddRetriableException<ExpectableTestExecption>();
+
+            var retry = new Retry(policy);
 
             var result = retry.Invoke(() => instance.IntReturningMethod(1, "func invoked"));
 
@@ -60,7 +63,7 @@ namespace Proteus.Retry.Test
                 if (VoidReturnInvokeCount == 0)
                 {
                     VoidReturnInvokeCount++;
-                    throw new Exception();
+                    throw new ExpectableTestExecption();
                 }
 
                 VoidReturnInvokeCount++;
