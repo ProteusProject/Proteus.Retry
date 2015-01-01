@@ -44,13 +44,15 @@ namespace Proteus.Retry
             {
                 try
                 {
-                    if (@delegate is Func<TReturn>)
+                    var func = @delegate as Func<TReturn>;
+                    
+                    if (func != null)
                     {
-                        returnValue = (TReturn)@delegate.DynamicInvoke();
+                        returnValue = func.Invoke();
                     }
                     else
                     {
-                        @delegate.DynamicInvoke();
+                        ((Action)@delegate).Invoke();
                         
                         //this line needed to keep the compiler happy; calling code should NOT inspect the returnValue b/c its meaningless when
                         // delegate is Action (and so has no return result to expose to the calling context)
