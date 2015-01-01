@@ -2,7 +2,7 @@
 
 namespace Proteus.Retry.Exceptions
 {
-    public class MaxRetryDurationExpiredException : RetryException
+    public class MaxRetryDurationExpiredException : RetryInvocationFailureException
     {
         public MaxRetryDurationExpiredException()
         {

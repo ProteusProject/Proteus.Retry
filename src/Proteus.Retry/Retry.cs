@@ -48,7 +48,7 @@ namespace Proteus.Retry
 
             try
             {
-                //if the timer-dependent value has been set, create the timer (start automatically)...
+                //if the timer-dependent value has been set, create the timer (starts automatically)...
                 if (MaxRetryDuration != default(TimeSpan))
                 {
                     timer = new Timer(MaxRetryDurationExpiredCallback, null, MaxRetryDuration, TimeSpan.FromSeconds(0));
@@ -95,7 +95,7 @@ namespace Proteus.Retry
                     //check the timer to see if expired, and throw appropriate exception if so...
                     if (_timerExpired)
                     {
-                        throw new MaxRetryDurationExpiredException();
+                        throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", MaxRetryDuration, retryCount));
                     }
 
 

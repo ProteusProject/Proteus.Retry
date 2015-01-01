@@ -25,6 +25,7 @@ namespace Proteus.Retry.Test
 
             Assert.Throws<MaxRetryDurationExpiredException>(() => retry.Invoke(() => instance.MethodThatSleepsThenAlwaysThrows(1000)));
 
+            //cannot assert a specific value here b/c the granularity of the timer isn't sufficiently fine-grained for consistent predictable results
             Assert.That(instance.SleepMethodInvocations, Is.LessThan(MAX_RETRIES));
         }
 
