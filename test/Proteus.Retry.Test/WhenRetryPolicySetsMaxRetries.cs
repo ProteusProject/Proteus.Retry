@@ -24,7 +24,7 @@ namespace Proteus.Retry.Test
 
             retry.Invoke(() => testObject.DoWorkThatAlwaysThrows());
 
-            Assert.That(testObject.DoWorkThatAlwaysThrowsInvocationCounter, Is.EqualTo(MAX_RETRIES + 1));
+            Assert.That(testObject.InvocationsOfDoWorkThatAlwaysThrows, Is.EqualTo(MAX_RETRIES + 1));
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace Proteus.Retry.Test
 
             retry.Invoke(() => testObject.DoWorkThatAlwaysThrows());
 
-            Assert.That(testObject.DoWorkThatAlwaysThrowsInvocationCounter, Is.EqualTo(1));
+            Assert.That(testObject.InvocationsOfDoWorkThatAlwaysThrows, Is.EqualTo(1));
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace Proteus.Retry.Test
 
             retry.Invoke(() => testObject.DoWorkThatThrowsUntilInvocationCountIs(3));
 
-            Assert.That(testObject.DoWorkThatThrowsUntilInvocationCounter, Is.EqualTo(3));
+            Assert.That(testObject.InvocationsOfDoWorkThatThrowsUntil, Is.EqualTo(3));
         }
 
         [Test]
@@ -68,21 +68,21 @@ namespace Proteus.Retry.Test
         {
             public void DoWorkThatAlwaysThrows()
             {
-                DoWorkThatAlwaysThrowsInvocationCounter++;
+                InvocationsOfDoWorkThatAlwaysThrows++;
                 throw new ExpectableTestExecption();
             }
 
             public void DoWorkThatThrowsUntilInvocationCountIs(int throwInvocationCount)
             {
-                if (DoWorkThatThrowsUntilInvocationCounter < throwInvocationCount)
+                if (InvocationsOfDoWorkThatThrowsUntil < throwInvocationCount)
                 {
-                    DoWorkThatThrowsUntilInvocationCounter++;
+                    InvocationsOfDoWorkThatThrowsUntil++;
                     throw new ExpectableTestExecption();
                 }
             }
 
-            public int DoWorkThatAlwaysThrowsInvocationCounter { get; private set; }
-            public int DoWorkThatThrowsUntilInvocationCounter { get; private set; }
+            public int InvocationsOfDoWorkThatAlwaysThrows { get; private set; }
+            public int InvocationsOfDoWorkThatThrowsUntil { get; private set; }
         }
     }
 }

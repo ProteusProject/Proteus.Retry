@@ -59,9 +59,11 @@ namespace Proteus.Retry.Test
         public void CanReportDereivedExceptionTypeAsRetriable()
         {
             var policy = new RetryPolicy();
-
+            
+            //register base class ...
             policy.AddRetriableException<Exception>();
 
+            //...check for a derived type
             Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
         }
 
@@ -70,7 +72,10 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
+            //register a bass class ...
             policy.AddRetriableException<Exception>();
+            
+            //...check for instance of derived type
             Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
         }
 
