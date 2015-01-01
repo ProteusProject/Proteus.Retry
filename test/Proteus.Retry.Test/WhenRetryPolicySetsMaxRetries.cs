@@ -16,7 +16,7 @@ namespace Proteus.Retry.Test
             const int MAX_RETRIES = 3;
 
             var policy = new RetryPolicy { MaxRetries = MAX_RETRIES };
-            policy.AddRetriableException<ExpectableTestExecption>();
+            policy.RetryOnException<ExpectableTestExecption>();
 
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
@@ -31,7 +31,7 @@ namespace Proteus.Retry.Test
         public void ZeroMaxRetriesStillInvokesDelegateOnce()
         {
             var policy = new RetryPolicy { MaxRetries = 0 };
-            policy.AddRetriableException<ExpectableTestExecption>();
+            policy.RetryOnException<ExpectableTestExecption>();
 
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
@@ -46,7 +46,7 @@ namespace Proteus.Retry.Test
         public void WillNotRetryAgainAfterSuccessfulInvocation()
         {
             var policy = new RetryPolicy { MaxRetries = 20 };
-            policy.AddRetriableException<ExpectableTestExecption>();
+            policy.RetryOnException<ExpectableTestExecption>();
 
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 

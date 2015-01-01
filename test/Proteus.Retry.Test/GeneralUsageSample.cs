@@ -15,8 +15,8 @@ namespace Proteus.Retry.Test
         {
             var instance = new TestObject();
 
-            var policy = new RetryPolicy() {MaxRetries = 20};
-            policy.AddRetriableException<ExpectableTestExecption>();
+            var policy = new RetryPolicy() { MaxRetries = 20 };
+            policy.RetryOnException<ExpectableTestExecption>();
 
             var retry = new Retry(policy);
 

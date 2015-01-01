@@ -34,23 +34,25 @@ namespace Proteus.Retry
             }
         }
 
-        public void AddRetriableException<TException>() where TException : Exception
+        public void RetryOnException<TException>() where TException : Exception
         {
             _retriableExceptions.Add(typeof(TException));
         }
 
-        public bool IsRetriableException<TException>() where TException : Exception
+        public bool IsRetryException<TException>() where TException : Exception
         {
-            return _retriableExceptions.Contains(typeof(TException)) ||
-                   _retriableExceptions.Any(registeredException => typeof(TException).IsSubclassOf(registeredException));
-
+            return DoIsRetryException(() => typeof(TException));
         }
 
-        public bool IsRetriableException(Exception exception)
+        public bool IsRetryException(Exception exception)
         {
-            return _retriableExceptions.Contains(exception.GetType()) || 
-                   _retriableExceptions.Any(registeredException => exception.GetType().IsSubclassOf(registeredException));
+            return DoIsRetryException(exception.GetType);
+        }
 
+        private bool DoIsRetryException(Func<Type> getTheType)
+        {
+            return _retriableExceptions.Contains(getTheType()) ||
+                  _retriableExceptions.Any(registeredException => getTheType().IsSubclassOf(registeredException));
         }
     }
 }

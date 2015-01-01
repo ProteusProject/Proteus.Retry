@@ -12,8 +12,8 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            policy.AddRetriableException<ArithmeticException>();
-            policy.AddRetriableException<ArgumentOutOfRangeException>();
+            policy.RetryOnException<ArithmeticException>();
+            policy.RetryOnException<ArgumentOutOfRangeException>();
 
             Assert.That(policy.RetriableExceptions, Has.Member(typeof(ArithmeticException)));
             Assert.That(policy.RetriableExceptions, Has.Member(typeof(ArgumentOutOfRangeException)));
@@ -38,10 +38,10 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            policy.AddRetriableException<ExpectableTestExecption>();
+            policy.RetryOnException<ExpectableTestExecption>();
 
-            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
-            Assert.That(policy.IsRetriableException<Exception>(), Is.False);
+            Assert.That(policy.IsRetryException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetryException<Exception>(), Is.False);
         }
 
         [Test]
@@ -49,10 +49,10 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            policy.AddRetriableException<ExpectableTestExecption>();
+            policy.RetryOnException<ExpectableTestExecption>();
 
-            Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
-            Assert.That(policy.IsRetriableException(new Exception()), Is.False);
+            Assert.That(policy.IsRetryException(new ExpectableTestExecption()), Is.True);
+            Assert.That(policy.IsRetryException(new Exception()), Is.False);
         }
 
         [Test]
@@ -61,10 +61,10 @@ namespace Proteus.Retry.Test
             var policy = new RetryPolicy();
             
             //register base class ...
-            policy.AddRetriableException<Exception>();
+            policy.RetryOnException<Exception>();
 
             //...check for a derived type
-            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetryException<ExpectableTestExecption>(), Is.True);
         }
 
         [Test]
@@ -73,10 +73,10 @@ namespace Proteus.Retry.Test
             var policy = new RetryPolicy();
 
             //register a bass class ...
-            policy.AddRetriableException<Exception>();
+            policy.RetryOnException<Exception>();
             
             //...check for instance of derived type
-            Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
+            Assert.That(policy.IsRetryException(new ExpectableTestExecption()), Is.True);
         }
 
         private class RetriableExceptionsTestSpy

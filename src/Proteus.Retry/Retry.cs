@@ -56,7 +56,7 @@ namespace Proteus.Retry
                 // wrapping the underlying 'real' exception as its inner
                 catch (TargetInvocationException exception)
                 {
-                    if (_policy.IsRetriableException(exception.InnerException))
+                    if (_policy.IsRetryException(exception.InnerException))
                     {
                         //swallow because we want/need to remain intact for next retry attempt
                     }
