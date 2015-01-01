@@ -26,7 +26,7 @@ namespace Proteus.Retry
 
         public void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
         {
-            int i = 0;
+            var i = 0;
 
             do
             {
@@ -52,12 +52,13 @@ namespace Proteus.Retry
                     //TODO: only swallow expected exceptions; otherwise throw (eventually)
                     //throw;
                 }
+                
                 i++;
 
             } while (i <= _policy.MaxRetries);
 
 
-
+            //should NEVER get here, but this line is needed to keep the compiler happy (for now)
             returnValue = default(TReturn);
         }
     }

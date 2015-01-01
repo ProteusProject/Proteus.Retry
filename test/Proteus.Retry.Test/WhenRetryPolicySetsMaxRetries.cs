@@ -53,7 +53,14 @@ namespace Proteus.Retry.Test
 
             Assert.That(testObject.DoWorkThatThrowsUntilInvocationCounter, Is.EqualTo(3));
         }
-        
+
+        [Test]
+        public void CannotSetNegativeValueForMaxRetries()
+        {
+            var policy = new RetryPolicy();
+            Assert.Throws<ArgumentOutOfRangeException>(() => policy.MaxRetries = -2);
+        }
+
         class RetryPolicyMaxRetriesTestSpy
         {
             public void DoWorkThatAlwaysThrows()
@@ -76,5 +83,5 @@ namespace Proteus.Retry.Test
         }
     }
 
-    
+
 }
