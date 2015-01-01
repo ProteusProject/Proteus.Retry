@@ -5,12 +5,17 @@ using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
 {
-    public class Retry
+    public class Retry : IRetryPolicy
     {
-        private readonly RetryPolicy _policy;
+        private readonly IRetryPolicy _policy;
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
 
-        public Retry(RetryPolicy policy)
+        public Retry()
+        {
+            _policy = new RetryPolicy();
+        }
+
+        public Retry(IRetryPolicy policy)
         {
             _policy = policy;
         }
@@ -59,7 +64,7 @@ namespace Proteus.Retry
                 // wrapping the underlying 'real' exception as its inner
                 catch (TargetInvocationException exception)
                 {
-                    if (_policy.IsRetriableException(exception.InnerException))
+                    if (IsRetriableException(exception.InnerException))
                     {
                         //swallow because we want/need to remain intact for next retry attempt
                         _innerExceptionHistory.Add(exception.InnerException);
@@ -72,12 +77,46 @@ namespace Proteus.Retry
 
                 i++;
 
-            } while (i <= _policy.MaxRetries);
+            } while (i <= MaxRetries);
 
-            var maxRetryCountReachedException = new MaxRetryCountReachedException(string.Format("Unable to successfully invoke method within {0} attempts.", _policy.MaxRetries));
-            maxRetryCountReachedException.InnerExceptionHistory = _innerExceptionHistory;
-            
+            var maxRetryCountReachedException =
+                new MaxRetryCountReachedException(
+                    string.Format("Unable to successfully invoke method within {0} attempts.", _policy.MaxRetries))
+                {
+                    InnerExceptionHistory = _innerExceptionHistory
+                };
+
             throw maxRetryCountReachedException;
         }
+
+        #region IRetryPolicy Members
+
+        public int MaxRetries
+        {
+            get { return _policy.MaxRetries; }
+            set { _policy.MaxRetries = value; }
+        }
+
+        public IEnumerable<Type> RetriableExceptions
+        {
+            get { return _policy.RetriableExceptions; }
+        }
+
+        public void RetryOnException<TException>() where TException : Exception
+        {
+            _policy.RetryOnException<TException>();
+        }
+
+        public bool IsRetriableException<TException>() where TException : Exception
+        {
+            return _policy.IsRetriableException<TException>();
+        }
+
+        public bool IsRetriableException(Exception exception)
+        {
+            return _policy.IsRetriableException(exception);
+        }
+        
+        #endregion
     }
 }

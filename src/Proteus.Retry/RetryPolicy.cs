@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Proteus.Retry
 {
-    public class RetryPolicy
+    public class RetryPolicy : IRetryPolicy
     {
         private int _maxRetries;
         private readonly IList<Type> _retriableExceptions = new List<Type>();
