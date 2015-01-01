@@ -5,9 +5,9 @@ using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
 {
-    public class Retry : IRetryPolicy
+    public class Retry : IManageRetryPolicy
     {
-        private readonly IRetryPolicy _policy;
+        private readonly IManageRetryPolicy _policy;
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
 
         public Retry()
@@ -15,7 +15,7 @@ namespace Proteus.Retry
             _policy = new RetryPolicy();
         }
 
-        public Retry(IRetryPolicy policy)
+        public Retry(IManageRetryPolicy policy)
         {
             _policy = policy;
         }
@@ -89,7 +89,7 @@ namespace Proteus.Retry
             throw maxRetryCountReachedException;
         }
 
-        #region IRetryPolicy Members
+        #region IManageRetryPolicy Members
 
         public int MaxRetries
         {

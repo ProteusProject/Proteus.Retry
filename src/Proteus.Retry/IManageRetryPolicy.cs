@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Proteus.Retry
 {
-    public interface IRetryPolicy
+    public interface IManageRetryPolicy
     {
         int MaxRetries { get; set; }
         IEnumerable<Type> RetriableExceptions { get; }
