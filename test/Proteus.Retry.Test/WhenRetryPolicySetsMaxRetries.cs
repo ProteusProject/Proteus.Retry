@@ -44,16 +44,22 @@ namespace Proteus.Retry.Test
         [Test]
         public void WillNotRetryAgainAfterSuccessfulInvocation()
         {
-            var policy = new RetryPolicy { MaxRetries = 20 };
+            const int MAX_RETRIES = 20;
+            const int THROW_UNTIL = 3;
+
+            Assume.That(MAX_RETRIES > THROW_UNTIL);
+
+
+            var policy = new RetryPolicy { MaxRetries = MAX_RETRIES };
             policy.RetryOnException<ExpectableTestExecption>();
 
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
             var retry = new Retry(policy);
 
-            retry.Invoke(() => testObject.DoWorkThatThrowsUntilInvocationCountIs(3));
+            retry.Invoke(() => testObject.DoWorkThatThrowsUntilInvocationCountIs(THROW_UNTIL));
 
-            Assert.That(testObject.InvocationsOfDoWorkThatThrowsUntil, Is.EqualTo(3));
+            Assert.That(testObject.InvocationsOfDoWorkThatThrowsUntil, Is.EqualTo(THROW_UNTIL));
         }
 
         [Test]
