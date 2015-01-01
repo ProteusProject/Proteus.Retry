@@ -15,7 +15,7 @@ namespace Proteus.Retry.Test
         {
             var instance = new TestObject();
 
-            var retry = new Retry(new RetryPolicy() { MaxRetries = 20 });
+            var retry = new Retry(new RetryPolicy() {MaxRetries = 20});
 
             var result = retry.Invoke(() => instance.IntReturningMethod(1, "func invoked"));
 
@@ -33,6 +33,39 @@ namespace Proteus.Retry.Test
 
         }
 
-        
+        private class TestObject
+        {
+            public string StringResult;
+            public int IntResult;
+            public int IntReturnInvokeCount;
+            public int VoidReturnInvokeCount;
+
+
+            public int IntReturningMethod(int theInt, string theString)
+            {
+                IntReturnInvokeCount++;
+                SetProperties(theInt, theString);
+                return theInt;
+            }
+
+            private void SetProperties(int theInt, string theString)
+            {
+                StringResult = theString;
+                IntResult = theInt;
+            }
+
+            public void VoidReturningMethodThatThrowsOnFirstInvocation(int theInt, string theString)
+            {
+
+                if (VoidReturnInvokeCount == 0)
+                {
+                    VoidReturnInvokeCount++;
+                    throw new Exception();
+                }
+
+                VoidReturnInvokeCount++;
+                SetProperties(theInt, theString);
+            }
+        }
     }
 }

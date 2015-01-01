@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestObject.cs" />
     <Compile Include="GeneralUsageSample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WhenRetryPolicySetsMaxRetries.cs" />

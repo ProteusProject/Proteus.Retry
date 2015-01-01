@@ -27,7 +27,7 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
-        public void MaxRetriesOfZeroInvokesDelegateOnce()
+        public void ZeroMaxRetriesStillInvokesDelegateOnce()
         {
             var policy = new RetryPolicy { MaxRetries = 0 };
 
@@ -61,7 +61,7 @@ namespace Proteus.Retry.Test
             Assert.Throws<ArgumentOutOfRangeException>(() => policy.MaxRetries = -2);
         }
 
-        class RetryPolicyMaxRetriesTestSpy
+        private class RetryPolicyMaxRetriesTestSpy
         {
             public void DoWorkThatAlwaysThrows()
             {
