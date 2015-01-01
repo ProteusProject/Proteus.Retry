@@ -38,7 +38,7 @@ namespace Proteus.Retry
 
         private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
         {
-            var i = 0;
+            var retryCount = 0;
 
             do
             {
@@ -71,17 +71,18 @@ namespace Proteus.Retry
                     }
                     else
                     {
+                        //if not an expected (retriable) exception, just re-throw it to calling code
                         throw;
                     }
                 }
 
-                i++;
+                retryCount++;
 
-            } while (i <= MaxRetries);
+            } while (retryCount <= MaxRetries);
 
             var maxRetryCountReachedException =
                 new MaxRetryCountReachedException(
-                    string.Format("Unable to successfully invoke method within {0} attempts.", _policy.MaxRetries))
+                    string.Format("Unable to successfully invoke method within {0} attempts.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", retryCount))
                 {
                     InnerExceptionHistory = _innerExceptionHistory
                 };
