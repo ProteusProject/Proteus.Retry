@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
 {
     public class Retry
     {
         private readonly RetryPolicy _policy;
+        private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
 
         public Retry(RetryPolicy policy)
         {
@@ -59,6 +62,7 @@ namespace Proteus.Retry
                     if (_policy.IsRetriableException(exception.InnerException))
                     {
                         //swallow because we want/need to remain intact for next retry attempt
+                        _innerExceptionHistory.Add(exception.InnerException);
                     }
                     else
                     {
@@ -70,9 +74,10 @@ namespace Proteus.Retry
 
             } while (i <= _policy.MaxRetries);
 
-
-            //we should NEVER get here, but this line is needed to keep the compiler happy
-            returnValue = default(TReturn);
+            var maxRetryCountReachedException = new MaxRetryCountReachedException(string.Format("Unable to successfully invoke method within {0} attempts.", _policy.MaxRetries));
+            maxRetryCountReachedException.InnerExceptionHistory = _innerExceptionHistory;
+            
+            throw maxRetryCountReachedException;
         }
     }
 }

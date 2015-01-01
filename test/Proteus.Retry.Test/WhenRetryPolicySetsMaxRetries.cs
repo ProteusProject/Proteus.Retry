@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry.Test
 {
@@ -22,8 +23,7 @@ namespace Proteus.Retry.Test
 
             var retry = new Retry(policy);
 
-            retry.Invoke(() => testObject.DoWorkThatAlwaysThrows());
-
+            Assert.Throws<MaxRetryCountReachedException>(() => retry.Invoke(() => testObject.DoWorkThatAlwaysThrows()));
             Assert.That(testObject.InvocationsOfDoWorkThatAlwaysThrows, Is.EqualTo(MAX_RETRIES + 1));
         }
 
@@ -37,8 +37,7 @@ namespace Proteus.Retry.Test
 
             var retry = new Retry(policy);
 
-            retry.Invoke(() => testObject.DoWorkThatAlwaysThrows());
-
+            Assert.Throws<MaxRetryCountReachedException>(() => retry.Invoke(() => testObject.DoWorkThatAlwaysThrows()));
             Assert.That(testObject.InvocationsOfDoWorkThatAlwaysThrows, Is.EqualTo(1));
         }
 
@@ -62,6 +61,34 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
             Assert.Throws<ArgumentOutOfRangeException>(() => policy.MaxRetries = -2);
+        }
+
+        [Test]
+        public void CanRetrievePastExceptionHistoryOnceMaxRetriesIsReached()
+        {
+            const int MAX_RETRIES = 20;
+
+            var policy = new RetryPolicy { MaxRetries = MAX_RETRIES };
+            policy.RetryOnException<ExpectableTestExecption>();
+
+            var testObject = new RetryPolicyMaxRetriesTestSpy();
+
+            var retry = new Retry(policy);
+
+            try
+            {
+                retry.Invoke(() => testObject.DoWorkThatAlwaysThrows());
+            }
+            catch (MaxRetryCountReachedException exception)
+            {
+                Assert.That(exception.InnerExceptionHistory.Count(), Is.EqualTo(MAX_RETRIES + 1));
+
+                //all exceptions in the list should be of the same pre-canned type based on the test spy hard-coded behavior to always throw
+                foreach (var pastException in exception.InnerExceptionHistory)
+                {
+                    Assert.That(pastException, Is.InstanceOf<ExpectableTestExecption>());
+                }
+            }
         }
 
         private class RetryPolicyMaxRetriesTestSpy
