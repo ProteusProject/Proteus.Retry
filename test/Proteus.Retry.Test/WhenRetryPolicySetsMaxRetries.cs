@@ -23,7 +23,7 @@ namespace Proteus.Retry.Test
 
             var retry = new Retry(policy);
 
-            Assert.Throws<MaxRetryCountReachedException>(() => retry.Invoke(() => testObject.DoWorkThatAlwaysThrows()));
+            Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => testObject.DoWorkThatAlwaysThrows()));
             Assert.That(testObject.InvocationsOfDoWorkThatAlwaysThrows, Is.EqualTo(MAX_RETRIES + 1));
         }
 
@@ -37,7 +37,7 @@ namespace Proteus.Retry.Test
 
             var retry = new Retry(policy);
 
-            Assert.Throws<MaxRetryCountReachedException>(() => retry.Invoke(() => testObject.DoWorkThatAlwaysThrows()));
+            Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => testObject.DoWorkThatAlwaysThrows()));
             Assert.That(testObject.InvocationsOfDoWorkThatAlwaysThrows, Is.EqualTo(1));
         }
 
@@ -85,7 +85,7 @@ namespace Proteus.Retry.Test
             {
                 retry.Invoke(() => testObject.DoWorkThatAlwaysThrows());
             }
-            catch (MaxRetryCountReachedException exception)
+            catch (MaxRetryCountExceededException exception)
             {
                 Assert.That(exception.InnerExceptionHistory.Count(), Is.EqualTo(MAX_RETRIES + 1));
 

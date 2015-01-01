@@ -26,6 +26,8 @@ namespace Proteus.Retry
             get { return new ReadOnlyCollection<Type>(_retriableExceptions); }
         }
 
+        public TimeSpan MaxRetryDuration { get; set; }
+
         private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception)
         {
             if (!isValidFunc.Invoke(value))

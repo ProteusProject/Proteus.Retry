@@ -37,7 +37,8 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\MaxRetryCountReachedException.cs" />
+    <Compile Include="Exceptions\MaxRetryCountExceededException.cs" />
+    <Compile Include="Exceptions\MaxRetryDurationExpiredException.cs" />
     <Compile Include="Exceptions\RetryException.cs" />
     <Compile Include="IManageRetryPolicy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

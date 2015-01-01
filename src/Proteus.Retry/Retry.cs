@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
@@ -9,6 +10,7 @@ namespace Proteus.Retry
     {
         private readonly IManageRetryPolicy _policy;
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
+        private bool _timerExpired;
 
         public Retry()
         {
@@ -32,7 +34,7 @@ namespace Proteus.Retry
             //necessary evil to keep the compiler happy
             // WARNING: don't do ANYTHING with this out param b/c its content isn't meaningful since we're invoking an Action
             // with no return value
-            object returnValue; 
+            object returnValue;
             DoInvoke(action, out returnValue);
         }
 
@@ -40,54 +42,86 @@ namespace Proteus.Retry
         {
             var retryCount = 0;
 
-            do
+            _timerExpired = false;
+
+            Timer timer = null;
+
+            try
             {
-                try
+                //if the timer-dependent value has been set, create the timer (start automatically)...
+                if (MaxRetryDuration != default(TimeSpan))
                 {
-                    var func = @delegate as Func<TReturn>;
-                    
-                    if (func != null)
-                    {
-                        returnValue = func.Invoke();
-                    }
-                    else
-                    {
-                        ((Action)@delegate).Invoke();
-                        
-                        //this line needed to keep the compiler happy; calling code should NOT inspect the returnValue b/c its meaningless when
-                        // delegate is Action (and so has no return result to expose to the calling context)
-                        returnValue = default(TReturn);
-                    }
-
-                    //after _any_ successful invocation of the action, bail out of the for-loop
-                    return;
-                }
-                catch (Exception exception)
-                {
-                    if (IsRetriableException(exception))
-                    {
-                        //swallow because we want/need to remain intact for next retry attempt
-                        _innerExceptionHistory.Add(exception);
-                    }
-                    else
-                    {
-                        //if not an expected (retriable) exception, just re-throw it to calling code
-                        throw;
-                    }
+                    timer = new Timer(MaxRetryDurationExpiredCallback, null, MaxRetryDuration, TimeSpan.FromSeconds(0));
                 }
 
-                retryCount++;
-
-            } while (retryCount <= MaxRetries);
-
-            var maxRetryCountReachedException =
-                new MaxRetryCountReachedException(
-                    string.Format("Unable to successfully invoke method within {0} attempts.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", retryCount))
+                do
                 {
-                    InnerExceptionHistory = _innerExceptionHistory
-                };
+                    try
+                    {
+                        var func = @delegate as Func<TReturn>;
 
-            throw maxRetryCountReachedException;
+                        if (func != null)
+                        {
+                            returnValue = func.Invoke();
+                        }
+                        else
+                        {
+                            ((Action)@delegate).Invoke();
+
+                            //this line needed to keep the compiler happy; calling code should NOT inspect the returnValue b/c its meaningless when
+                            // delegate is Action (and so has no return result to expose to the calling context)
+                            returnValue = default(TReturn);
+                        }
+
+                        //after _any_ successful invocation of the action, bail out of the for-loop
+                        return;
+                    }
+                    catch (Exception exception)
+                    {
+                        if (IsRetriableException(exception))
+                        {
+                            //swallow because we want/need to remain intact for next retry attempt
+                            _innerExceptionHistory.Add(exception);
+                        }
+                        else
+                        {
+                            //if not an expected (retriable) exception, just re-throw it to calling code
+                            throw;
+                        }
+                    }
+
+                    retryCount++;
+
+                    //check the timer to see if expired, and throw appropriate exception if so...
+                    if (_timerExpired)
+                    {
+                        throw new MaxRetryDurationExpiredException();
+                    }
+
+
+                } while (retryCount <= MaxRetries);
+
+                var maxRetryCountReachedException =
+                    new MaxRetryCountExceededException(
+                        string.Format(
+                            "Unable to successfully invoke method within {0} attempts.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.",
+                            retryCount))
+                    {
+                        InnerExceptionHistory = _innerExceptionHistory
+                    };
+
+                throw maxRetryCountReachedException;
+            }
+            finally
+            {
+                if (timer != null)
+                    timer.Dispose();
+            }
+        }
+
+        private void MaxRetryDurationExpiredCallback(object state)
+        {
+            _timerExpired = true;
         }
 
         #region IManageRetryPolicy Members
@@ -101,6 +135,12 @@ namespace Proteus.Retry
         public IEnumerable<Type> RetriableExceptions
         {
             get { return _policy.RetriableExceptions; }
+        }
+
+        public TimeSpan MaxRetryDuration
+        {
+            get { return _policy.MaxRetryDuration; }
+            set { _policy.MaxRetryDuration = value; }
         }
 
         public void RetryOnException<TException>() where TException : Exception
@@ -117,7 +157,7 @@ namespace Proteus.Retry
         {
             return _policy.IsRetriableException(exception);
         }
-        
+
         #endregion
     }
 }
