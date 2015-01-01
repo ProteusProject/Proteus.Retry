@@ -28,7 +28,7 @@ namespace Proteus.Retry
             DoInvoke(action, out returnValue);
         }
 
-        public void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
+        private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
         {
             var i = 0;
 
@@ -56,7 +56,7 @@ namespace Proteus.Retry
                 // wrapping the underlying 'real' exception as its inner
                 catch (TargetInvocationException exception)
                 {
-                    if (_policy.IsRetryException(exception.InnerException))
+                    if (_policy.IsRetriableException(exception.InnerException))
                     {
                         //swallow because we want/need to remain intact for next retry attempt
                     }

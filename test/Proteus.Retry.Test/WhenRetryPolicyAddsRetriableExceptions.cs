@@ -40,8 +40,8 @@ namespace Proteus.Retry.Test
 
             policy.RetryOnException<ExpectableTestExecption>();
 
-            Assert.That(policy.IsRetryException<ExpectableTestExecption>(), Is.True);
-            Assert.That(policy.IsRetryException<Exception>(), Is.False);
+            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetriableException<Exception>(), Is.False);
         }
 
         [Test]
@@ -51,8 +51,8 @@ namespace Proteus.Retry.Test
 
             policy.RetryOnException<ExpectableTestExecption>();
 
-            Assert.That(policy.IsRetryException(new ExpectableTestExecption()), Is.True);
-            Assert.That(policy.IsRetryException(new Exception()), Is.False);
+            Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
+            Assert.That(policy.IsRetriableException(new Exception()), Is.False);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace Proteus.Retry.Test
             policy.RetryOnException<Exception>();
 
             //...check for a derived type
-            Assert.That(policy.IsRetryException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace Proteus.Retry.Test
             policy.RetryOnException<Exception>();
             
             //...check for instance of derived type
-            Assert.That(policy.IsRetryException(new ExpectableTestExecption()), Is.True);
+            Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
         }
 
         private class RetriableExceptionsTestSpy
