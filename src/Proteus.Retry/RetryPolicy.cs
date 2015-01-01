@@ -11,16 +11,16 @@ namespace Proteus.Retry
             get { return _maxRetries; }
             set
             {
-                AssertValueAcceptable<int, ArgumentOutOfRangeException>(value, arg => arg >= 0);
+                AssertValueIsAcceptable(value, arg => arg >= 0, new ArgumentOutOfRangeException("MaxRetries", "MaxRetries must be >= 0!"));
                 _maxRetries = value;
             }
         }
 
-        private void AssertValueAcceptable<TValue, TException>(TValue value, Func<TValue, bool> isValidFunc) where TException: Exception, new() 
+        private void AssertValueIsAcceptable<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception) 
         {
             if (!isValidFunc.Invoke(value))
             {
-                throw new TException();
+                throw exception;
             }
         }
     }
