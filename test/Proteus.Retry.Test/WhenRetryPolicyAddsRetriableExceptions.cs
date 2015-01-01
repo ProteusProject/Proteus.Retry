@@ -12,10 +12,10 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            policy.AddRetriableException<Exception>();
+            policy.AddRetriableException<ArithmeticException>();
             policy.AddRetriableException<ArgumentOutOfRangeException>();
 
-            Assert.That(policy.RetriableExceptions, Has.Member(typeof(Exception)));
+            Assert.That(policy.RetriableExceptions, Has.Member(typeof(ArithmeticException)));
             Assert.That(policy.RetriableExceptions, Has.Member(typeof(ArgumentOutOfRangeException)));
         }
 
@@ -29,7 +29,7 @@ namespace Proteus.Retry.Test
             var retry = new Retry(policy);
             var instance = new RetriableExceptionsTestSpy();
 
-            Assert.Throws<ArithmeticException>(() => retry.Invoke(() => instance.ThrowException<ArithmeticException>()));
+            Assert.Throws<ExpectableTestExecption>(() => retry.Invoke(() => instance.ThrowException<ExpectableTestExecption>()));
 
         }
 
@@ -38,9 +38,9 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            policy.AddRetriableException<ArithmeticException>();
+            policy.AddRetriableException<ExpectableTestExecption>();
 
-            Assert.That(policy.IsRetriableException<ArithmeticException>(), Is.True);
+            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
             Assert.That(policy.IsRetriableException<Exception>(), Is.False);
         }
 
@@ -49,13 +49,30 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            policy.AddRetriableException<ArithmeticException>();
+            policy.AddRetriableException<ExpectableTestExecption>();
 
-            Assert.That(policy.IsRetriableException(new ArithmeticException()), Is.True);
+            Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
             Assert.That(policy.IsRetriableException(new Exception()), Is.False);
         }
 
-       
+        [Test]
+        public void CanReportDereivedExceptionTypeAsRetriable()
+        {
+            var policy = new RetryPolicy();
+
+            policy.AddRetriableException<Exception>();
+
+            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+        }
+
+        [Test]
+        public void CanReportDerivedExceptionInstanceAsRetriable()
+        {
+            var policy = new RetryPolicy();
+
+            policy.AddRetriableException<Exception>();
+            Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
+        }
 
         private class RetriableExceptionsTestSpy
         {
