@@ -17,7 +17,7 @@ namespace Proteus.Retry.Test
             var policy = new RetryPolicy();
             policy.MaxRetryDuration = TimeSpan.FromSeconds(5);
             policy.MaxRetries = MAX_RETRIES;
-            policy.RetryOnException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestExecption>();
 
             var retry = new Retry(policy);
             

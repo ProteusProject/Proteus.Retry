@@ -143,14 +143,14 @@ namespace Proteus.Retry
             set { _policy.MaxRetryDuration = value; }
         }
 
-        public void RetryOnException<TException>() where TException : Exception
+        public void RegisterRetriableException<TException>() where TException : Exception
         {
-            _policy.RetryOnException<TException>();
+            _policy.RegisterRetriableException<TException>();
         }
 
-        public void RetryOnExceptions(IEnumerable<Type> exceptions)
+        public void RegisterRetriableExceptions(IEnumerable<Type> exceptions)
         {
-            _policy.RetryOnExceptions(exceptions);
+            _policy.RegisterRetriableExceptions(exceptions);
         }
 
         public bool IsRetriableException<TException>() where TException : Exception

@@ -36,19 +36,16 @@ namespace Proteus.Retry
             }
         }
 
-        public void RetryOnException<TException>() where TException : Exception
+        public void RegisterRetriableException<TException>() where TException : Exception
         {
             _retriableExceptions.Add(typeof(TException));
         }
 
-        public void RetryOnExceptions(IEnumerable<Type> exceptions)
+        public void RegisterRetriableExceptions(IEnumerable<Type> exceptions)
         {
-            foreach (var exception in exceptions)
+            foreach (var candidate in exceptions.Where(candidate => candidate.IsSubclassOf(typeof(Exception))))
             {
-                if (exception.IsSubclassOf(typeof(Exception)))
-                {
-                    _retriableExceptions.Add(exception);
-                }
+                _retriableExceptions.Add(candidate);
             }
         }
 
