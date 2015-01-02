@@ -40,7 +40,7 @@ namespace Proteus.Retry.Test
                 throw new ExpectableTestExecption();
             }
 
-            public int SleepMethodInvocations { get; set; }
+            public int SleepMethodInvocations { get; private set; }
         }
     }
 }

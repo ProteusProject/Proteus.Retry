@@ -143,6 +143,12 @@ namespace Proteus.Retry
             set { _policy.MaxRetryDuration = value; }
         }
 
+        public bool IgnoreExceptionInheritance
+        {
+            get { return _policy.IgnoreExceptionInheritance; }
+            set { _policy.IgnoreExceptionInheritance = value; }
+        }
+
         public void RegisterRetriableException<TException>() where TException : Exception
         {
             _policy.RegisterRetriableException<TException>();

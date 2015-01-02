@@ -46,7 +46,7 @@ namespace Proteus.Retry.Test
 
 
         [Test]
-        public void AddingMultipleExceptionsCanReportExceptionTypesAsRetriable()
+        public void AddingMultipleExceptionsAtOnceCanReportExceptionTypesAsRetriable()
         {
             var policy = new RetryPolicy();
 
@@ -105,6 +105,26 @@ namespace Proteus.Retry.Test
 
             //...check for instance of derived type
             Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
+        }
+
+        [Test]
+        public void CanOptionallyIgnoreExceptionTypeHierarchy()
+        {
+            Assume.That(typeof(InheritsFromExpectableTestException).IsSubclassOf(typeof(ExpectableTestExecption)), "Assumed inheritance relationship not present!");
+
+            var policy = new RetryPolicy { MaxRetries = 10, IgnoreExceptionInheritance = true };
+            policy.RegisterRetriableException<ExpectableTestExecption>();
+
+            var retry = new Retry(policy);
+            var instance = new RetriableExceptionsTestSpy();
+
+            //since only the base type ExpectableTestException is registered as retriable, we should get the un-retried derived type execption here...
+            Assert.Throws<InheritsFromExpectableTestException>(() => retry.Invoke(() => instance.ThrowException<InheritsFromExpectableTestException>()));
+        }
+
+        private class InheritsFromExpectableTestException : ExpectableTestExecption
+        {
+
         }
 
         private class RetriableExceptionsTestSpy
