@@ -45,7 +45,10 @@ namespace Proteus.Retry
         {
             foreach (var exception in exceptions)
             {
-                _retriableExceptions.Add(exception);
+                if (exception.IsSubclassOf(typeof(Exception)))
+                {
+                    _retriableExceptions.Add(exception);
+                }
             }
         }
 

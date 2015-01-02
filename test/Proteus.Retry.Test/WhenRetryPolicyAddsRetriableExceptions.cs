@@ -42,7 +42,6 @@ namespace Proteus.Retry.Test
             policy.RetryOnException<ExpectableTestExecption>();
 
             Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
-            Assert.That(policy.IsRetriableException<Exception>(), Is.False);
         }
 
 
@@ -51,13 +50,26 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            var exceptions = new List<Type> {typeof (ArithmeticException), typeof (ExpectableTestExecption)};
+            var exceptions = new List<Type> { typeof(ArithmeticException), typeof(ExpectableTestExecption) };
 
             policy.RetryOnExceptions(exceptions);
 
             Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
             Assert.That(policy.IsRetriableException<ArithmeticException>(), Is.True);
-            Assert.That(policy.IsRetriableException<Exception>(), Is.False);
+        }
+
+        [Test]
+        public void AddingMultipleExceptionsIgnoresTypesNotDerivedFromException()
+        {
+            var policy = new RetryPolicy();
+
+            var exceptions = new List<Type> { typeof(ArithmeticException), typeof(ExpectableTestExecption), typeof(Retry) };
+
+            policy.RetryOnExceptions(exceptions);
+
+            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetriableException<ArithmeticException>(), Is.True);
+            Assert.That(policy.RetriableExceptions, Has.No.Member(typeof(Retry)));
         }
 
         [Test]
@@ -75,7 +87,7 @@ namespace Proteus.Retry.Test
         public void CanReportDereivedExceptionTypeAsRetriable()
         {
             var policy = new RetryPolicy();
-            
+
             //register base class ...
             policy.RetryOnException<Exception>();
 
@@ -90,7 +102,7 @@ namespace Proteus.Retry.Test
 
             //register a bass class ...
             policy.RetryOnException<Exception>();
-            
+
             //...check for instance of derived type
             Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
         }
