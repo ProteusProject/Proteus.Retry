@@ -7,7 +7,7 @@ using Proteus.Retry.Exceptions;
 namespace Proteus.Retry.Test
 {
     [TestFixture]
-    public class WhenRetryPolicySetsMaxRetryDuration
+    public class WhenSettingMaxRetryDuration
     {
         [Test]
         public void RetriesAreCanceledOnceDurationExpires()

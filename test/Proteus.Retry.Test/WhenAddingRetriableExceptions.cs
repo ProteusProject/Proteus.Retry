@@ -6,7 +6,7 @@ using NUnit.Framework.Constraints;
 namespace Proteus.Retry.Test
 {
     [TestFixture]
-    public class WhenRetryPolicyAddsRetriableExceptions
+    public class WhenAddingRetriableExceptions
     {
         [Test]
         public void ExceptionsAreTracked()

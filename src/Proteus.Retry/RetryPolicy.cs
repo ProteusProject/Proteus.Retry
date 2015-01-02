@@ -16,7 +16,7 @@ namespace Proteus.Retry
             get { return _maxRetries; }
             set
             {
-                ThrowOnInvalidValue(value, arg => arg >= 0, new ArgumentOutOfRangeException("MaxRetries", "MaxRetries must be >= 0!"));
+                ThrowOnInvalidValue(value, arg => arg >= 0, new ArgumentOutOfRangeException("value", "MaxRetries must be >= 0!"));
                 _maxRetries = value;
             }
         }

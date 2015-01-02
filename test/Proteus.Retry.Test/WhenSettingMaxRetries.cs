@@ -9,7 +9,7 @@ using Proteus.Retry.Exceptions;
 namespace Proteus.Retry.Test
 {
     [TestFixture]
-    public class WhenRetryPolicySetsMaxRetries
+    public class WhenSettingMaxRetries
     {
         [Test]
         public void MaxRetriesAreRespected()
