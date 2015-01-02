@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
@@ -34,13 +35,28 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
-        public void CanReportExceptionTypeAsRetriable()
+        public void AddingSingleExceptionCanReportExceptionTypeAsRetriable()
         {
             var policy = new RetryPolicy();
 
             policy.RetryOnException<ExpectableTestExecption>();
 
             Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetriableException<Exception>(), Is.False);
+        }
+
+
+        [Test]
+        public void AddingMultipleExceptionsCanReportExceptionTypesAsRetriable()
+        {
+            var policy = new RetryPolicy();
+
+            var exceptions = new List<Type> {typeof (ArithmeticException), typeof (ExpectableTestExecption)};
+
+            policy.RetryOnExceptions(exceptions);
+
+            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetriableException<ArithmeticException>(), Is.True);
             Assert.That(policy.IsRetriableException<Exception>(), Is.False);
         }
 

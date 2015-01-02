@@ -41,6 +41,14 @@ namespace Proteus.Retry
             _retriableExceptions.Add(typeof(TException));
         }
 
+        public void RetryOnExceptions(IEnumerable<Type> exceptions)
+        {
+            foreach (var exception in exceptions)
+            {
+                _retriableExceptions.Add(exception);
+            }
+        }
+
         public bool IsRetriableException<TException>() where TException : Exception
         {
             return DoIsRetriableException(() => typeof(TException));

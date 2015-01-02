@@ -148,6 +148,11 @@ namespace Proteus.Retry
             _policy.RetryOnException<TException>();
         }
 
+        public void RetryOnExceptions(IEnumerable<Type> exceptions)
+        {
+            _policy.RetryOnExceptions(exceptions);
+        }
+
         public bool IsRetriableException<TException>() where TException : Exception
         {
             return _policy.IsRetriableException<TException>();
