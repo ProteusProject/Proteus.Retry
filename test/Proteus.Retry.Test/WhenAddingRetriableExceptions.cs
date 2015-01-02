@@ -108,9 +108,9 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
-        public void CanOptionallyIgnoreExceptionTypeHierarchy()
+        public void CanSetDefaultToIgnoreExceptionTypeHierarchy()
         {
-            Assume.That(typeof(InheritsFromExpectableTestException).IsSubclassOf(typeof(ExpectableTestExecption)), "Assumed inheritance relationship not present!");
+            Assume.That(typeof(InheritedTestException).IsSubclassOf(typeof(ExpectableTestExecption)), "Assumed inheritance relationship not present!");
 
             var policy = new RetryPolicy { MaxRetries = 10, IgnoreExceptionInheritance = true };
             policy.RegisterRetriableException<ExpectableTestExecption>();
@@ -119,10 +119,42 @@ namespace Proteus.Retry.Test
             var instance = new RetriableExceptionsTestSpy();
 
             //since only the base type ExpectableTestException is registered as retriable, we should get the un-retried derived type execption here...
-            Assert.Throws<InheritsFromExpectableTestException>(() => retry.Invoke(() => instance.ThrowException<InheritsFromExpectableTestException>()));
+            Assert.Throws<InheritedTestException>(() => retry.Invoke(() => instance.ThrowException<InheritedTestException>()));
         }
 
-        private class InheritsFromExpectableTestException : ExpectableTestExecption
+        [Test]
+        public void CanOverrideRespectExceptionTypeHierarchySettingForSingleInvocation()
+        {
+            Assume.That(typeof(InheritedTestException).IsSubclassOf(typeof(ExpectableTestExecption)), "Assumed inheritance relationship not present!");
+
+            var policy = new RetryPolicy { MaxRetries = 10 };
+            policy.RegisterRetriableException<ExpectableTestExecption>();
+
+            Assume.That(policy.IgnoreExceptionInheritance, Is.False);
+
+            var retry = new Retry(policy);
+            var instance = new RetriableExceptionsTestSpy();
+
+            //since only the base type ExpectableTestException is registered as retriable, we should get the un-retried derived type execption here...
+            Assert.Throws<InheritedTestException>(() => retry.Invoke(() => instance.ThrowException<InheritedTestException>(), true));
+        }
+
+        [Test]
+        public void CanOverrideIgnoreExceptionTypeHierarchySettingForSingleInvocation()
+        {
+            Assume.That(typeof(InheritedTestException).IsSubclassOf(typeof(ExpectableTestExecption)), "Assumed inheritance relationship not present!");
+
+            var policy = new RetryPolicy { MaxRetries = 10, IgnoreExceptionInheritance = true };
+            policy.RegisterRetriableException<ExpectableTestExecption>();
+
+            var retry = new Retry(policy);
+            var instance = new RetriableExceptionsTestSpy();
+
+            //since only the base type ExpectableTestException is registered as retriable, we should get the un-retried derived type execption here...
+            Assert.Throws<InheritedTestException>(() => retry.Invoke(() => instance.ThrowException<InheritedTestException>(), false));
+        }
+
+        private class InheritedTestException : ExpectableTestExecption
         {
 
         }

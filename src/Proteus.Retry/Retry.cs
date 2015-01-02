@@ -24,21 +24,31 @@ namespace Proteus.Retry
 
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
+            return Invoke(func, false);
+        }
+
+        public TReturn Invoke<TReturn>(Func<TReturn> func, bool retryExceptionsIgnoreInheritance)
+        {
             TReturn returnValue;
-            DoInvoke(func, out returnValue);
+            DoInvoke(func, retryExceptionsIgnoreInheritance, out returnValue);
             return returnValue;
         }
 
         public void Invoke(Action action)
         {
+            Invoke(action, false);
+        }
+
+        public void Invoke(Action action, bool retryExceptionsIgnoreInheritance)
+        {
             //necessary evil to keep the compiler happy
             // WARNING: don't do ANYTHING with this out param b/c its content isn't meaningful since we're invoking an Action
             // with no return value
             object returnValue;
-            DoInvoke(action, out returnValue);
+            DoInvoke(action, retryExceptionsIgnoreInheritance, out returnValue);
         }
 
-        private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
+        private void DoInvoke<TReturn>(Delegate @delegate, bool retryExceptionsIgnoreInheritance, out TReturn returnValue)
         {
             var retryCount = 0;
 
@@ -78,7 +88,7 @@ namespace Proteus.Retry
                     }
                     catch (Exception exception)
                     {
-                        if (IsRetriableException(exception))
+                        if (IsRetriableException(exception, retryExceptionsIgnoreInheritance))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(exception);
@@ -164,9 +174,19 @@ namespace Proteus.Retry
             return _policy.IsRetriableException<TException>();
         }
 
+        public bool IsRetriableException<TException>(bool ignoreInheritance) where TException : Exception
+        {
+            return _policy.IsRetriableException<TException>(ignoreInheritance);
+        }
+
         public bool IsRetriableException(Exception exception)
         {
             return _policy.IsRetriableException(exception);
+        }
+
+        public bool IsRetriableException(Exception exception, bool ignoreInheritance)
+        {
+            return _policy.IsRetriableException(exception, ignoreInheritance);
         }
 
         #endregion

@@ -12,6 +12,8 @@ namespace Proteus.Retry
         void RegisterRetriableException<TException>() where TException : Exception;
         void RegisterRetriableExceptions(IEnumerable<Type> exceptions );
         bool IsRetriableException<TException>() where TException : Exception;
+        bool IsRetriableException<TException>(bool ignoreInheritance) where TException : Exception;
         bool IsRetriableException(Exception exception);
+        bool IsRetriableException(Exception exception, bool ignoreInheritance);
     }
 }
