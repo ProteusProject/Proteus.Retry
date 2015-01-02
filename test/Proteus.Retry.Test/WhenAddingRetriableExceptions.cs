@@ -112,7 +112,7 @@ namespace Proteus.Retry.Test
         {
             Assume.That(typeof(InheritedTestException).IsSubclassOf(typeof(ExpectableTestExecption)), "Assumed inheritance relationship not present!");
 
-            var policy = new RetryPolicy { MaxRetries = 10, IgnoreExceptionInheritance = true };
+            var policy = new RetryPolicy { MaxRetries = 10, IgnoreInheritanceForRetryExceptions = true };
             policy.RegisterRetriableException<ExpectableTestExecption>();
 
             var retry = new Retry(policy);
@@ -130,7 +130,7 @@ namespace Proteus.Retry.Test
             var policy = new RetryPolicy { MaxRetries = 10 };
             policy.RegisterRetriableException<ExpectableTestExecption>();
 
-            Assume.That(policy.IgnoreExceptionInheritance, Is.False);
+            Assume.That(policy.IgnoreInheritanceForRetryExceptions, Is.False);
 
             var retry = new Retry(policy);
             var instance = new RetriableExceptionsTestSpy();
@@ -144,7 +144,7 @@ namespace Proteus.Retry.Test
         {
             Assume.That(typeof(InheritedTestException).IsSubclassOf(typeof(ExpectableTestExecption)), "Assumed inheritance relationship not present!");
 
-            var policy = new RetryPolicy { MaxRetries = 10, IgnoreExceptionInheritance = true };
+            var policy = new RetryPolicy { MaxRetries = 10, IgnoreInheritanceForRetryExceptions = true };
             policy.RegisterRetriableException<ExpectableTestExecption>();
 
             var retry = new Retry(policy);

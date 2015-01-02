@@ -8,18 +8,20 @@ namespace Proteus.Retry
 {
     public class Retry : IManageRetryPolicy
     {
-        private readonly IManageRetryPolicy _policy;
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
         private bool _timerExpired;
 
+        public IManageRetryPolicy Policy { get; set; }
+
+
         public Retry()
+            : this(new RetryPolicy())
         {
-            _policy = new RetryPolicy();
         }
 
         public Retry(IManageRetryPolicy policy)
         {
-            _policy = policy;
+            Policy = policy;
         }
 
         public TReturn Invoke<TReturn>(Func<TReturn> func)
@@ -27,10 +29,10 @@ namespace Proteus.Retry
             return Invoke(func, false);
         }
 
-        public TReturn Invoke<TReturn>(Func<TReturn> func, bool retryExceptionsIgnoreInheritance)
+        public TReturn Invoke<TReturn>(Func<TReturn> func, bool ignoreInheritanceForRetryExceptions)
         {
             TReturn returnValue;
-            DoInvoke(func, retryExceptionsIgnoreInheritance, out returnValue);
+            DoInvoke(func, ignoreInheritanceForRetryExceptions, out returnValue);
             return returnValue;
         }
 
@@ -39,16 +41,16 @@ namespace Proteus.Retry
             Invoke(action, false);
         }
 
-        public void Invoke(Action action, bool retryExceptionsIgnoreInheritance)
+        public void Invoke(Action action, bool ignoreInheritanceForRetryExceptions)
         {
             //necessary evil to keep the compiler happy
             // WARNING: don't do ANYTHING with this out param b/c its content isn't meaningful since we're invoking an Action
             // with no return value
             object returnValue;
-            DoInvoke(action, retryExceptionsIgnoreInheritance, out returnValue);
+            DoInvoke(action, ignoreInheritanceForRetryExceptions, out returnValue);
         }
 
-        private void DoInvoke<TReturn>(Delegate @delegate, bool retryExceptionsIgnoreInheritance, out TReturn returnValue)
+        private void DoInvoke<TReturn>(Delegate @delegate, bool ignoreInheritanceForRetryExceptions, out TReturn returnValue)
         {
             var retryCount = 0;
 
@@ -88,7 +90,7 @@ namespace Proteus.Retry
                     }
                     catch (Exception exception)
                     {
-                        if (IsRetriableException(exception, retryExceptionsIgnoreInheritance))
+                        if (IsRetriableException(exception, ignoreInheritanceForRetryExceptions))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(exception);
@@ -138,55 +140,55 @@ namespace Proteus.Retry
 
         public int MaxRetries
         {
-            get { return _policy.MaxRetries; }
-            set { _policy.MaxRetries = value; }
+            get { return Policy.MaxRetries; }
+            set { Policy.MaxRetries = value; }
         }
 
         public IEnumerable<Type> RetriableExceptions
         {
-            get { return _policy.RetriableExceptions; }
+            get { return Policy.RetriableExceptions; }
         }
 
         public TimeSpan MaxRetryDuration
         {
-            get { return _policy.MaxRetryDuration; }
-            set { _policy.MaxRetryDuration = value; }
+            get { return Policy.MaxRetryDuration; }
+            set { Policy.MaxRetryDuration = value; }
         }
 
-        public bool IgnoreExceptionInheritance
+        public bool IgnoreInheritanceForRetryExceptions
         {
-            get { return _policy.IgnoreExceptionInheritance; }
-            set { _policy.IgnoreExceptionInheritance = value; }
+            get { return Policy.IgnoreInheritanceForRetryExceptions; }
+            set { Policy.IgnoreInheritanceForRetryExceptions = value; }
         }
 
         public void RegisterRetriableException<TException>() where TException : Exception
         {
-            _policy.RegisterRetriableException<TException>();
+            Policy.RegisterRetriableException<TException>();
         }
 
         public void RegisterRetriableExceptions(IEnumerable<Type> exceptions)
         {
-            _policy.RegisterRetriableExceptions(exceptions);
+            Policy.RegisterRetriableExceptions(exceptions);
         }
 
         public bool IsRetriableException<TException>() where TException : Exception
         {
-            return _policy.IsRetriableException<TException>();
+            return Policy.IsRetriableException<TException>();
         }
 
         public bool IsRetriableException<TException>(bool ignoreInheritance) where TException : Exception
         {
-            return _policy.IsRetriableException<TException>(ignoreInheritance);
+            return Policy.IsRetriableException<TException>(ignoreInheritance);
         }
 
         public bool IsRetriableException(Exception exception)
         {
-            return _policy.IsRetriableException(exception);
+            return Policy.IsRetriableException(exception);
         }
 
         public bool IsRetriableException(Exception exception, bool ignoreInheritance)
         {
-            return _policy.IsRetriableException(exception, ignoreInheritance);
+            return Policy.IsRetriableException(exception, ignoreInheritance);
         }
 
         #endregion

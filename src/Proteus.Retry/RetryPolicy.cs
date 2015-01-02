@@ -27,7 +27,7 @@ namespace Proteus.Retry
         }
 
         public TimeSpan MaxRetryDuration { get; set; }
-        public bool IgnoreExceptionInheritance { get; set; }
+        public bool IgnoreInheritanceForRetryExceptions { get; set; }
 
         private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception)
         {
@@ -75,7 +75,7 @@ namespace Proteus.Retry
             var specificTypeMatched = _retriableExceptions.Contains(getTheType());
             var typeMatchedToAncestor = _retriableExceptions.Any(registeredException => getTheType().IsSubclassOf(registeredException));
 
-            if (IgnoreExceptionInheritance || ignoreInheritance)
+            if (IgnoreInheritanceForRetryExceptions || ignoreInheritance)
             {
                 return specificTypeMatched;
             }

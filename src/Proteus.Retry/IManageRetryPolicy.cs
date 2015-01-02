@@ -8,7 +8,7 @@ namespace Proteus.Retry
         int MaxRetries { get; set; }
         IEnumerable<Type> RetriableExceptions { get; }
         TimeSpan MaxRetryDuration { get; set; }
-        bool IgnoreExceptionInheritance { get; set; }
+        bool IgnoreInheritanceForRetryExceptions { get; set; }
         void RegisterRetriableException<TException>() where TException : Exception;
         void RegisterRetriableExceptions(IEnumerable<Type> exceptions );
         bool IsRetriableException<TException>() where TException : Exception;
