@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -47,6 +48,31 @@ namespace Proteus.Retry.Test
             }
 
             Assert.That(instance.InvocationsOfAwaitableMethodThatAlwaysThrows, Is.EqualTo(MAX_RETRIES + 1));
+        }
+        
+        [Test]
+        public async Task CanPopulateInnerExceptionHistoryWithInnerExceptions()
+        {
+
+            const int MAX_RETRIES = 20;
+
+            var policy = new RetryPolicy();
+            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.MaxRetries = MAX_RETRIES;
+
+            var retry = new Retry(policy);
+
+            var instance = new TestSpy();
+
+            try
+            {
+                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrows());
+                Assert.Fail("MaxRetryCountExceededException not thrown.");
+            }
+            catch (MaxRetryCountExceededException exception)
+            {
+                Assert.That(exception.InnerExceptionHistory.Any(ex=> ex.GetType() == typeof(ExpectableTestExecption)));
+            }
         }
 
 
