@@ -8,10 +8,10 @@ using Proteus.Retry.Exceptions;
 namespace Proteus.Retry.Test
 {
     [TestFixture]
-    public class AsyncTesting
+    public class WhenInvokingAsyncDelegates
     {
         [Test]
-        public async void HappyPath1()
+        public async Task CanAwaitSuccessfulInvocation()
         {
             var retry = new Retry();
 
@@ -23,33 +23,35 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
-        public async void UnhappyPath()
+        public async Task CanReportMaxRetriesExceededIfNoSuccess()
         {
+
+            const int MAX_RETRIES = 20;
+
             var policy = new RetryPolicy();
             policy.RegisterRetriableException<ExpectableTestExecption>();
-            policy.MaxRetries = 2;
+            policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
 
             var instance = new TestSpy();
 
-
             try
             {
-                await retry.Invoke(() => instance.AsyncMethodThatThrowsUntilInvocationCountIs(3));
+                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrows());
                 Assert.Fail("MaxRetryCountExceededException not thrown.");
             }
             catch (MaxRetryCountExceededException)
             {
-                //swallow so that test will pass if we end up here!
+                Assert.Pass();
             }
-            
-            Assert.That(instance.InvocationsOfAsyncMethodThatThrowsUntil, Is.EqualTo(3));
+
+            Assert.That(instance.InvocationsOfAwaitableMethodThatAlwaysThrows, Is.EqualTo(MAX_RETRIES + 1));
         }
 
 
         [Test]
-        public async Task MyMethod()
+        public async Task CanReportMaxRetryDurationExceededIfNoSuccess()
         {
             var policy = new RetryPolicy { MaxRetries = 10, MaxRetryDuration = TimeSpan.FromSeconds(5) };
             policy.RegisterRetriableException<ExpectableTestExecption>();
@@ -60,11 +62,9 @@ namespace Proteus.Retry.Test
 
             try
             {
-                var x = retry.Invoke(() => instance.SomeMethodThatAwaits());
-                await x;
-
+                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrowsAndSleepsFor(2000));
             }
-            catch (ExpectableTestExecption execption)
+            catch (MaxRetryDurationExpiredException execption)
             {
                 Assert.Pass();
             }
@@ -100,19 +100,34 @@ namespace Proteus.Retry.Test
                 return Task.Run(() => NonAwaitableMethodThatDoesntThrow(message));
             }
 
-            public async Task AsyncMethodThatThrowsUntilInvocationCountIs(int throwInvocationCount)
+            public async Task AwaitableMethodThatThrowsUntilInvocationCountIs(int throwInvocationCount)
             {
-                //await Task.Run(() =>
-                //{
-                if (InvocationsOfAsyncMethodThatThrowsUntil < throwInvocationCount)
+                await Task.Run(() =>
                 {
-                    InvocationsOfAsyncMethodThatThrowsUntil++;
-                    throw new ExpectableTestExecption();
-                }
-                //});
+                    if (InvocationsOfAwaitableMethodThatThrowsUntil < throwInvocationCount)
+                    {
+                        InvocationsOfAwaitableMethodThatThrowsUntil++;
+                        throw new ExpectableTestExecption();
+                    }
+                });
             }
 
-            public int InvocationsOfAsyncMethodThatThrowsUntil { get; set; }
+            public Task AwaitableMethodThatAlwaysThrows()
+            {
+                InvocationsOfAwaitableMethodThatAlwaysThrows++;
+                throw new ExpectableTestExecption();
+            }
+            
+            public Task AwaitableMethodThatAlwaysThrowsAndSleepsFor(int milliseconds)
+            {
+                InvocationsOfAwaitableMethodThatAlwaysThrowsAndSleeps++;
+                Thread.Sleep(milliseconds);
+                throw new ExpectableTestExecption();
+            }
+
+            public int InvocationsOfAwaitableMethodThatAlwaysThrowsAndSleeps { get; private set; }
+            public int InvocationsOfAwaitableMethodThatAlwaysThrows { get; private set; }
+            public int InvocationsOfAwaitableMethodThatThrowsUntil { get; private set; }
         }
     }
 }

@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncTesting.cs" />
+    <Compile Include="WhenInvokingAsyncDelegates.cs" />
     <Compile Include="ExpectableTestExecption.cs" />
     <Compile Include="GeneralUsageSample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
