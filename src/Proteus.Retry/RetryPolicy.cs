@@ -9,7 +9,7 @@ namespace Proteus.Retry
     public class RetryPolicy : IManageRetryPolicy
     {
         private int _maxRetries;
-        private readonly IList<Type> _retriableExceptions = new List<Type>();
+        private readonly ExceptionList _retriableExceptions = new ExceptionList();
 
         public int MaxRetries
         {

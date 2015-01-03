@@ -46,6 +46,7 @@
     <Compile Include="ExpectableTestExecption.cs" />
     <Compile Include="GeneralUsageSample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WhenManipulatingExceptionList.cs" />
     <Compile Include="WhenSettingMaxRetries.cs" />
     <Compile Include="WhenAddingRetriableExceptions.cs" />
     <Compile Include="WhenSettingMaxRetryDuration.cs" />

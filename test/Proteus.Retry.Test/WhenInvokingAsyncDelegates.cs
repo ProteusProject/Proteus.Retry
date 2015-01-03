@@ -49,7 +49,7 @@ namespace Proteus.Retry.Test
 
             Assert.That(instance.InvocationsOfAwaitableMethodThatAlwaysThrows, Is.EqualTo(MAX_RETRIES + 1));
         }
-        
+
         [Test]
         public async Task CanPopulateInnerExceptionHistoryWithInnerExceptions()
         {
@@ -71,7 +71,7 @@ namespace Proteus.Retry.Test
             }
             catch (MaxRetryCountExceededException exception)
             {
-                Assert.That(exception.InnerExceptionHistory.Any(ex=> ex.GetType() == typeof(ExpectableTestExecption)));
+                Assert.That(exception.InnerExceptionHistory.Any(ex => ex.GetType() == typeof(ExpectableTestExecption)));
             }
         }
 
@@ -143,7 +143,7 @@ namespace Proteus.Retry.Test
                 InvocationsOfAwaitableMethodThatAlwaysThrows++;
                 throw new ExpectableTestExecption();
             }
-            
+
             public Task AwaitableMethodThatAlwaysThrowsAndSleepsFor(int milliseconds)
             {
                 InvocationsOfAwaitableMethodThatAlwaysThrowsAndSleeps++;
