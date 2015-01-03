@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
@@ -75,10 +76,21 @@ namespace Proteus.Retry
                         if (func != null)
                         {
                             returnValue = func.Invoke();
+
+                            var returnTask = returnValue as Task;
+
+                            if (returnTask != null)
+                            {
+                                if (returnTask.Status == TaskStatus.Faulted)
+                                {
+                                    returnTask.Exception.Handle(ex => true);
+                                    throw new AggregateException(returnTask.Exception.InnerExceptions);
+                                }
+                            }
                         }
                         else
                         {
-                            ((Action)@delegate).Invoke();
+                            ((Action) @delegate).Invoke();
 
                             //this line needed to keep the compiler happy; calling code should NOT inspect the returnValue b/c its meaningless when
                             // delegate is Action (and so has no return result to expose to the calling context)
@@ -87,6 +99,19 @@ namespace Proteus.Retry
 
                         //after _any_ successful invocation of the action, bail out of the for-loop
                         return;
+                    }
+                    catch (AggregateException aggregateException)
+                    {
+                        if (IsRetriableException(aggregateException.InnerException, ignoreInheritanceForRetryExceptions))
+                        {
+                            //swallow because we want/need to remain intact for next retry attempt
+                            _innerExceptionHistory.Add(aggregateException.InnerException);
+                        }
+                        else
+                        {
+                            //if not an expected (retriable) exception, just re-throw it to calling code
+                            throw;
+                        }
                     }
                     catch (Exception exception)
                     {
