@@ -90,7 +90,7 @@ namespace Proteus.Retry.Test
             {
                 await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrowsAndSleepsFor(2000));
             }
-            catch (MaxRetryDurationExpiredException execption)
+            catch (MaxRetryDurationExpiredException)
             {
                 Assert.Pass();
             }

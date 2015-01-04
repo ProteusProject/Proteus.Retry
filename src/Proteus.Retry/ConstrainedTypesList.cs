@@ -4,20 +4,20 @@ using System.Collections.Generic;
 
 namespace Proteus.Retry
 {
-    public class ExceptionList : IList<Type>
+    public class ConstrainedTypesList<TConstraint> : IList<Type>
     {
         private readonly IList<Type> _inner = new List<Type>();
 
         private void ThrowIfTypeIsNotException(Type type)
         {
-            if (type == typeof (Exception) || type.IsSubclassOf(typeof (Exception)))
+            if (type == typeof(TConstraint) || type.IsSubclassOf(typeof(TConstraint)))
                 return;
 
-            throw new ArgumentException(string.Format("{0} can only contain types derived from System.Exception.", this.GetType().FullName));
+            throw new ArgumentException(string.Format("{0} can only contain {1} or types derived from {1}.", this.GetType().FullName, typeof(TConstraint).FullName));
         }
 
         #region IList<Type> members
-        
+
         public IEnumerator<Type> GetEnumerator()
         {
             return _inner.GetEnumerator();
@@ -89,7 +89,7 @@ namespace Proteus.Retry
                 _inner[index] = value;
             }
         }
-        
+
         #endregion
     }
 }
