@@ -8,7 +8,7 @@ namespace Proteus.Retry
     {
         private readonly IList<Type> _inner = new List<Type>();
 
-        private void ThrowIfTypeIsNotException(Type type)
+        private void ThrowIfTypeIsNotConstrainedType(Type type)
         {
             if (type == typeof(TConstraint) || type.IsSubclassOf(typeof(TConstraint)))
                 return;
@@ -30,7 +30,7 @@ namespace Proteus.Retry
 
         public void Add(Type item)
         {
-            ThrowIfTypeIsNotException(item);
+            ThrowIfTypeIsNotConstrainedType(item);
             _inner.Add(item);
         }
 
@@ -71,7 +71,7 @@ namespace Proteus.Retry
 
         public void Insert(int index, Type item)
         {
-            ThrowIfTypeIsNotException(item);
+            ThrowIfTypeIsNotConstrainedType(item);
             _inner.Insert(index, item);
         }
 
@@ -85,7 +85,7 @@ namespace Proteus.Retry
             get { return _inner[index]; }
             set
             {
-                ThrowIfTypeIsNotException(value);
+                ThrowIfTypeIsNotConstrainedType(value);
                 _inner[index] = value;
             }
         }
