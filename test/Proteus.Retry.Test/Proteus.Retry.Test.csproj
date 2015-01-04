@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WhenExecutingHappyPathWithRetry.cs" />
     <Compile Include="WhenInvokingAsyncDelegates.cs" />
     <Compile Include="ExpectableTestExecption.cs" />
     <Compile Include="GeneralUsageSample.cs" />
