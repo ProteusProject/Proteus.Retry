@@ -27,31 +27,21 @@ namespace Proteus.Retry
 
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
-            return Invoke(func, false);
-        }
-
-        public TReturn Invoke<TReturn>(Func<TReturn> func, bool ignoreInheritanceForRetryExceptions)
-        {
             TReturn returnValue;
-            DoInvoke(func, ignoreInheritanceForRetryExceptions, out returnValue);
+            DoInvoke(func, out returnValue);
             return returnValue;
         }
 
         public void Invoke(Action action)
         {
-            Invoke(action, false);
-        }
-
-        public void Invoke(Action action, bool ignoreInheritanceForRetryExceptions)
-        {
             //necessary evil to keep the compiler happy
             // WARNING: don't do ANYTHING with this out param b/c its content isn't meaningful since we're invoking an Action
             // with no return value
             object returnValue;
-            DoInvoke(action, ignoreInheritanceForRetryExceptions, out returnValue);
+            DoInvoke(action, out returnValue);
         }
 
-        private void DoInvoke<TReturn>(Delegate @delegate, bool ignoreInheritanceForRetryExceptions, out TReturn returnValue)
+        private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
         {
             var retryCount = 0;
 
@@ -98,11 +88,11 @@ namespace Proteus.Retry
                             if (returnTask.Status == TaskStatus.Faulted)
                             {
                                 //if in faulted state we have to tell the Task infrastructure which exceptions it should expect us to handle...
-                                returnTask.Exception.Handle(ex => IsRetriableException(aggregateException.InnerException, ignoreInheritanceForRetryExceptions));
+                                returnTask.Exception.Handle(ex => IsRetriableException(aggregateException.InnerException, Policy.IgnoreInheritanceForRetryExceptions));
                             }
                         }
-                        
-                        if (IsRetriableException(aggregateException.InnerException, ignoreInheritanceForRetryExceptions))
+
+                        if (IsRetriableException(aggregateException.InnerException, Policy.IgnoreInheritanceForRetryExceptions))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(aggregateException.InnerException);
@@ -115,7 +105,7 @@ namespace Proteus.Retry
                     }
                     catch (Exception exception)
                     {
-                        if (IsRetriableException(exception, ignoreInheritanceForRetryExceptions))
+                        if (IsRetriableException(exception, Policy.IgnoreInheritanceForRetryExceptions))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(exception);
