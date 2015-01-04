@@ -88,7 +88,7 @@ namespace Proteus.Retry
                             if (returnTask.Status == TaskStatus.Faulted)
                             {
                                 //if in faulted state we have to tell the Task infrastructure which exceptions it should expect us to handle...
-                                returnTask.Exception.Handle(ex => IsRetriableException(aggregateException.InnerException, Policy.IgnoreInheritanceForRetryExceptions));
+                                returnTask.Exception.Handle(ex => IsRetriableException(ex, Policy.IgnoreInheritanceForRetryExceptions));
                             }
                         }
 
