@@ -67,6 +67,10 @@ namespace Proteus.Retry
                     timer = new Timer(MaxRetryDurationExpiredCallback, null, MaxRetryDuration, TimeSpan.FromSeconds(0));
                 }
 
+                //have to ensure that the out param is assigned _some_ value no matter what to keep the compiler happy
+                // (this value is reset in the case of invoking a Func and is ignored in the case of invoking an Action)
+                returnValue = default(TReturn);
+
                 do
                 {
                     try
@@ -76,25 +80,10 @@ namespace Proteus.Retry
                         if (func != null)
                         {
                             returnValue = func.Invoke();
-
-                            var returnTask = returnValue as Task;
-
-                            if (returnTask != null)
-                            {
-                                if (returnTask.Status == TaskStatus.Faulted)
-                                {
-                                    returnTask.Exception.Handle(ex => true);
-                                    throw new AggregateException(returnTask.Exception.InnerExceptions);
-                                }
-                            }
                         }
                         else
                         {
-                            ((Action) @delegate).Invoke();
-
-                            //this line needed to keep the compiler happy; calling code should NOT inspect the returnValue b/c its meaningless when
-                            // delegate is Action (and so has no return result to expose to the calling context)
-                            returnValue = default(TReturn);
+                            ((Action)@delegate).Invoke();
                         }
 
                         //after _any_ successful invocation of the action, bail out of the for-loop
@@ -102,6 +91,17 @@ namespace Proteus.Retry
                     }
                     catch (AggregateException aggregateException)
                     {
+                        var returnTask = returnValue as Task;
+
+                        if (returnTask != null)
+                        {
+                            if (returnTask.Status == TaskStatus.Faulted)
+                            {
+                                //if in faulted state we have to tell the Task infrastructure which exceptions it should expect us to handle...
+                                returnTask.Exception.Handle(ex => IsRetriableException(aggregateException.InnerException, ignoreInheritanceForRetryExceptions));
+                            }
+                        }
+                        
                         if (IsRetriableException(aggregateException.InnerException, ignoreInheritanceForRetryExceptions))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
