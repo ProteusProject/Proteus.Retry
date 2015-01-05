@@ -10,7 +10,7 @@ namespace Proteus.Retry
     {
         private int _maxRetries;
         private readonly ConstrainedTypesList<Exception> _retriableExceptions = new ConstrainedTypesList<Exception>();
-        private TimeSpan _retryDelayInterval = default(TimeSpan);
+        private TimeSpan _retryDelayInterval = TimeSpan.FromSeconds(0);
 
         public int MaxRetries
         {
