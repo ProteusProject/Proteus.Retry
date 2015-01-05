@@ -29,6 +29,12 @@ namespace Proteus.Retry
         public TimeSpan MaxRetryDuration { get; set; }
         public bool IgnoreInheritanceForRetryExceptions { get; set; }
 
+        public TimeSpan RetryDelayDuration
+        {
+            get { return default(TimeSpan); }
+            set { throw new NotImplementedException(); }
+        }
+
         private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception)
         {
             if (!isValidFunc.Invoke(value))

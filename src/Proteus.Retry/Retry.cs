@@ -128,6 +128,10 @@ namespace Proteus.Retry
 
                     retryCount++;
 
+                    //PCL doesn't offer Thread.Sleep so this hack will provide equivalent pause of the current thread for us ...
+                    var sleepHack = new ManualResetEvent(false);
+                    sleepHack.WaitOne(Policy.RetryDelayDuration);
+
                     //check the timer to see if expired, and throw appropriate exception if so...
                     if (_timerExpired)
                     {
@@ -183,6 +187,12 @@ namespace Proteus.Retry
         {
             get { return Policy.IgnoreInheritanceForRetryExceptions; }
             set { Policy.IgnoreInheritanceForRetryExceptions = value; }
+        }
+
+        public TimeSpan RetryDelayDuration
+        {
+            get { return Policy.RetryDelayDuration; }
+            set { Policy.RetryDelayDuration = value; }
         }
 
         public void RegisterRetriableException<TException>() where TException : Exception
