@@ -29,7 +29,7 @@ namespace Proteus.Retry
         public TimeSpan MaxRetryDuration { get; set; }
         public bool IgnoreInheritanceForRetryExceptions { get; set; }
 
-        public TimeSpan RetryDelayDuration
+        public TimeSpan RetryDelayInterval
         {
             get { return default(TimeSpan); }
             set { throw new NotImplementedException(); }
