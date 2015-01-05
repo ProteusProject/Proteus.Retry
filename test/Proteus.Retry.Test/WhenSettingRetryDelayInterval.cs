@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Remoting.Metadata;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using NUnit.Framework;
@@ -69,18 +70,32 @@ namespace Proteus.Retry.Test
             Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => instance.MethodThatAlwaysThrows()),
                 "Did not get to end of retries count!");
 
+            var deltas = new List<double>();
+
+
             //the first intervasl measure is always invalid so have to start Asserts with the second pair
             // of measuresments (which means index = 2)
             for (var i = 2; i < instance.Intervals.Count; i++)
             {
                 var currentInterval = instance.Intervals[i];
                 var priorInterval = instance.Intervals[i - 1];
-                var deltaAsPercentage = (currentInterval - priorInterval) / (double)priorInterval;
+                deltas.Add((currentInterval - priorInterval) / (double)priorInterval);
 
-                //because we're doubling the interval, the % delta betw any two adjacent timings should be 1x the prior interval...
-                Assert.That(deltaAsPercentage, Is.EqualTo(1.0).Within(0.2));
             }
 
+            //permit up to 20% of the timings to be out-of-spec; necessary to accommodate variations in timing
+            // during test-runs, else test results are too indeterminate to be useful
+            var results = deltas.Select(delta => AreEqualWithinTolerance(delta, 1.0, 0.20)).ToList();
+            var falseResultsCount = results.Count(r => r == false);
+            
+            Assert.That((double)falseResultsCount / results.Count, Is.LessThanOrEqualTo(0.20));
+
+        }
+
+
+        private bool AreEqualWithinTolerance(double first, double second, double tolerance)
+        {
+            return Math.Abs(first - second) <= tolerance;
         }
 
         [Test]
