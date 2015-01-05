@@ -78,7 +78,7 @@ namespace Proteus.Retry.Test
                 var deltaAsPercentage = (currentInterval - priorInterval) / (double)priorInterval;
 
                 //because we're doubling the interval, the % delta betw any two adjacent timings should be 1x the prior interval...
-                Assert.That(deltaAsPercentage, Is.EqualTo(1.0).Within(0.1));
+                Assert.That(deltaAsPercentage, Is.EqualTo(1.0).Within(0.2));
             }
 
         }
