@@ -11,7 +11,6 @@ namespace Proteus.Retry
     public class Retry : IManageRetryPolicy
     {
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
-        private bool _timerExpired;
 
         public IManageRetryPolicy Policy { get; set; }
 
@@ -37,8 +36,8 @@ namespace Proteus.Retry
         public void Invoke(Action action)
         {
             //necessary evil to keep the compiler happy
-            // WARNING: don't do ANYTHING with this out param b/c its content isn't meaningful since we're invoking an Action
-            // with no return value
+            // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
+            // invokes and Action (with no return value)
             object returnValue;
             DoInvoke(action, out returnValue);
         }
@@ -47,7 +46,7 @@ namespace Proteus.Retry
         {
             var retryCount = 0;
 
-            _timerExpired = false;
+            var timerState = new TimerCallbackState();
 
             Timer timer = null;
 
@@ -56,7 +55,7 @@ namespace Proteus.Retry
                 //if the timer-dependent value has been set, create the timer (starts automatically)...
                 if (MaxRetryDuration != default(TimeSpan))
                 {
-                    timer = new Timer(MaxRetryDurationExpiredCallback, null, MaxRetryDuration, TimeSpan.FromSeconds(0));
+                    timer = new Timer(MaxRetryDurationExpiredCallback, timerState, MaxRetryDuration, TimeSpan.FromSeconds(0));
                 }
 
                 //have to ensure that the out param is assigned _some_ value no matter what to keep the compiler happy
@@ -130,7 +129,7 @@ namespace Proteus.Retry
                     sleepHack.WaitOne(Policy.RetryDelayInterval);
 
                     //check the timer to see if expired, and throw appropriate exception if so...
-                    if (_timerExpired)
+                    if (timerState.DurationExceeded)
                     {
                         throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", MaxRetryDuration, retryCount));
                     }
@@ -158,7 +157,13 @@ namespace Proteus.Retry
 
         private void MaxRetryDurationExpiredCallback(object state)
         {
-            _timerExpired = true;
+            var timerState = (TimerCallbackState) state;
+            timerState.DurationExceeded = true;
+        }
+
+        private class TimerCallbackState
+        {
+            public bool DurationExceeded;
         }
 
         #region IManageRetryPolicy Members
