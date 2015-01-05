@@ -195,6 +195,12 @@ namespace Proteus.Retry
             set { Policy.RetryDelayInterval = value; }
         }
 
+        public Func<TimeSpan> RetryDelayIntervalCalculator
+        {
+            get { return Policy.RetryDelayIntervalCalculator; }
+            set { Policy.RetryDelayIntervalCalculator = value; }
+        }
+
         public void RegisterRetriableException<TException>() where TException : Exception
         {
             Policy.RegisterRetriableException<TException>();

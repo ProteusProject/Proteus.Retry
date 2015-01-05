@@ -51,6 +51,7 @@
     <Compile Include="WhenSettingMaxRetries.cs" />
     <Compile Include="WhenAddingRetriableExceptions.cs" />
     <Compile Include="WhenSettingMaxRetryDuration.cs" />
+    <Compile Include="WhenSettingRetryDelayInterval.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Proteus.Retry\Proteus.Retry.csproj">

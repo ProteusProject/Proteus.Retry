@@ -10,6 +10,7 @@ namespace Proteus.Retry
     {
         private int _maxRetries;
         private readonly ConstrainedTypesList<Exception> _retriableExceptions = new ConstrainedTypesList<Exception>();
+        private TimeSpan _retryDelayInterval = default(TimeSpan);
 
         public int MaxRetries
         {
@@ -31,9 +32,19 @@ namespace Proteus.Retry
 
         public TimeSpan RetryDelayInterval
         {
-            get { return default(TimeSpan); }
-            set { throw new NotImplementedException(); }
+            get
+            {
+                return null != RetryDelayIntervalCalculator
+                    ? RetryDelayIntervalCalculator()
+                    : _retryDelayInterval;
+            }
+            set
+            {
+                _retryDelayInterval = value;
+            }
         }
+
+        public Func<TimeSpan> RetryDelayIntervalCalculator { get; set; }
 
         private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception)
         {
@@ -63,7 +74,7 @@ namespace Proteus.Retry
 
         public bool IsRetriableException<TException>(bool ignoreInheritance) where TException : Exception
         {
-            return DoIsRetriableException(() => typeof(TException), ignoreInheritance); 
+            return DoIsRetriableException(() => typeof(TException), ignoreInheritance);
         }
 
         public bool IsRetriableException(Exception exception)
