@@ -34,8 +34,8 @@ namespace Proteus.Retry
         {
             get
             {
-                return null != RetryDelayIntervalCalculator
-                    ? RetryDelayIntervalCalculator()
+                return null != RetryDelayIntervalProvider
+                    ? RetryDelayIntervalProvider()
                     : _retryDelayInterval;
             }
             set
@@ -44,7 +44,7 @@ namespace Proteus.Retry
             }
         }
 
-        public Func<TimeSpan> RetryDelayIntervalCalculator { get; set; }
+        public Func<TimeSpan> RetryDelayIntervalProvider { get; set; }
 
         private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -199,10 +200,10 @@ namespace Proteus.Retry
             set { Policy.RetryDelayInterval = value; }
         }
 
-        public Func<TimeSpan> RetryDelayIntervalCalculator
+        public Func<TimeSpan> RetryDelayIntervalProvider
         {
-            get { return Policy.RetryDelayIntervalCalculator; }
-            set { Policy.RetryDelayIntervalCalculator = value; }
+            get { return Policy.RetryDelayIntervalProvider; }
+            set { Policy.RetryDelayIntervalProvider = value; }
         }
 
         public void RegisterRetriableException<TException>() where TException : Exception

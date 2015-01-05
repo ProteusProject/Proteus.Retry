@@ -10,7 +10,7 @@ namespace Proteus.Retry
         TimeSpan MaxRetryDuration { get; set; }
         bool IgnoreInheritanceForRetryExceptions { get; set; }
         TimeSpan RetryDelayInterval { get; set; }
-        Func<TimeSpan> RetryDelayIntervalCalculator { get; set; }
+        Func<TimeSpan> RetryDelayIntervalProvider { get; set; }
         void RegisterRetriableException<TException>() where TException : Exception;
         void RegisterRetriableExceptions(IEnumerable<Type> exceptions);
         bool IsRetriableException<TException>() where TException : Exception;
