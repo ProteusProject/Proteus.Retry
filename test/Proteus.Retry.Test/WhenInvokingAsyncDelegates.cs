@@ -74,6 +74,31 @@ namespace Proteus.Retry.Test
                 Assert.That(exception.InnerExceptionHistory.Any(ex => ex.GetType() == typeof(ExpectableTestExecption)));
             }
         }
+        
+        [Test]
+        public async Task CanPopulateInnerExceptionHistoryWithInnerExceptionsWhenNestedAggregateExceptions()
+        {
+
+            const int MAX_RETRIES = 20;
+
+            var policy = new RetryPolicy();
+            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.MaxRetries = MAX_RETRIES;
+
+            var retry = new Retry(policy);
+
+            var instance = new TestSpy();
+
+            try
+            {
+                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrowsAndCallsNestedAwaitableMethodThatAlwaysThrows());
+                Assert.Fail("MaxRetryCountExceededException not thrown.");
+            }
+            catch (MaxRetryCountExceededException exception)
+            {
+                Assert.That(exception.InnerExceptionHistory.Any(ex => ex.GetType() == typeof(ExpectableTestExecption)));
+            }
+        }
 
 
         [Test]
@@ -154,6 +179,12 @@ namespace Proteus.Retry.Test
             public int InvocationsOfAwaitableMethodThatAlwaysThrowsAndSleeps { get; private set; }
             public int InvocationsOfAwaitableMethodThatAlwaysThrows { get; private set; }
             public int InvocationsOfAwaitableMethodThatThrowsUntil { get; private set; }
+
+            public async Task AwaitableMethodThatAlwaysThrowsAndCallsNestedAwaitableMethodThatAlwaysThrows()
+            {
+                await AwaitableMethodThatAlwaysThrows();
+                throw new ExpectableTestExecption();
+            }
         }
     }
 }

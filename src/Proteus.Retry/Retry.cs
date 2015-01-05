@@ -84,23 +84,27 @@ namespace Proteus.Retry
                             ((Action)@delegate).Invoke();
                         }
 
-                        //after _any_ successful invocation of the action, bail out of the for-loop
-                        signalDone.Set();
-                        return;
-                    }
-                    catch (AggregateException aggregateException)
-                    {
                         var returnTask = returnValue as Task;
 
                         if (returnTask != null)
                         {
                             if (returnTask.Status == TaskStatus.Faulted)
                             {
-                                //if in faulted state we have to tell the Task infrastructure which exceptions it should expect us to handle...
-                                returnTask.Exception.Handle(ex => IsRetriableException(ex, Policy.IgnoreInheritanceForRetryExceptions));
+                                //if in faulted state we have to tell the Task infrastructure we're handling ALL the exceptions
+                                returnTask.Exception.Handle(ex => true);
+
+                                //now that we've short-circuted the Task exception system, we can recompose our own and throw it
+                                // so we can catch it ourselves below...
+                                throw new AggregateException(returnTask.Exception.InnerException);
                             }
                         }
 
+                        //after _any_ successful invocation of the action, bail out of the for-loop
+                        signalDone.Set();
+                        return;
+                    }
+                    catch (AggregateException aggregateException)
+                    {
                         if (IsRetriableException(aggregateException.InnerException, Policy.IgnoreInheritanceForRetryExceptions))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
