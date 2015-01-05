@@ -28,29 +28,22 @@ namespace Proteus.Retry
 
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
-            var signalDone = new AutoResetEvent(false);
-            
             TReturn returnValue;
-            DoInvoke(func, signalDone, out returnValue);
+            DoInvoke(func, out returnValue);
             
-            signalDone.WaitOne();
             return returnValue;
         }
 
         public void Invoke(Action action)
         {
-            var signalDone = new AutoResetEvent(false);
-
             //necessary evil to keep the compiler happy
             // WARNING: don't do ANYTHING with this out param b/c its content isn't meaningful since we're invoking an Action
             // with no return value
             object returnValue;
-            DoInvoke(action, signalDone, out returnValue);
-
-            signalDone.WaitOne();
+            DoInvoke(action, out returnValue);
         }
 
-        private void DoInvoke<TReturn>(Delegate @delegate, AutoResetEvent signalDone, out TReturn returnValue)
+        private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
         {
             var retryCount = 0;
 
@@ -100,8 +93,7 @@ namespace Proteus.Retry
                             }
                         }
 
-                        //after _any_ successful invocation of the action, bail out of the for-loop
-                        signalDone.Set();
+                        //after _any_ successful invocation of the action, bail out of the do-while loop
                         return;
                     }
                     catch (AggregateException aggregateException)
