@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Proteus.Retry.Exceptions.MaxRetryCountExceededException" Collapsed="true">
+    <Position X="1" Y="4" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\MaxRetryCountExceededException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Proteus.Retry.Exceptions.MaxRetryDurationExpiredException" Collapsed="true">
+    <Position X="4.5" Y="4" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\MaxRetryDurationExpiredException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Proteus.Retry.Exceptions.RetryException" Collapsed="true">
+    <Position X="3.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\RetryException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Proteus.Retry.Exceptions.RetryInvocationFailureException" Collapsed="true">
+    <Position X="3" Y="2.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\RetryInvocationFailureException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
