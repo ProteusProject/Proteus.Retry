@@ -46,9 +46,9 @@ namespace Proteus.Retry
 
         public Func<TimeSpan> RetryDelayIntervalProvider { get; set; }
 
-        private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> isValidFunc, Exception exception)
+        private void ThrowOnInvalidValue<TValue>(TValue value, Func<TValue, bool> validator, Exception exception)
         {
-            if (!isValidFunc.Invoke(value))
+            if (!validator.Invoke(value))
             {
                 throw exception;
             }
@@ -69,6 +69,7 @@ namespace Proteus.Retry
 
         public bool IsRetriableException<TException>() where TException : Exception
         {
+            //TODO: shouldn't this respect the value of IgnoreInheritanceForRetryExceptions?
             return IsRetriableException<TException>(false);
         }
 
@@ -79,6 +80,7 @@ namespace Proteus.Retry
 
         public bool IsRetriableException(Exception exception)
         {
+            //TODO: shouldn't this respect the value of IgnoreInheritanceForRetryExceptions?
             return DoIsRetriableException(exception.GetType, false);
         }
 

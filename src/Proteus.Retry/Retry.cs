@@ -8,7 +8,7 @@ using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
 {
-    public class Retry : IManageRetryPolicy
+    public class Retry
     {
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
 
@@ -53,9 +53,9 @@ namespace Proteus.Retry
             try
             {
                 //if the timer-dependent value has been set, create the timer (starts automatically)...
-                if (MaxRetryDuration != default(TimeSpan))
+                if (Policy.MaxRetryDuration != default(TimeSpan))
                 {
-                    timer = new Timer(MaxRetryDurationExpiredCallback, timerState, MaxRetryDuration, TimeSpan.FromSeconds(0));
+                    timer = new Timer(MaxRetryDurationExpiredCallback, timerState, Policy.MaxRetryDuration, TimeSpan.FromSeconds(0));
                 }
 
                 //have to ensure that the out param is assigned _some_ value no matter what to keep the compiler happy
@@ -97,7 +97,7 @@ namespace Proteus.Retry
                     }
                     catch (AggregateException aggregateException)
                     {
-                        if (IsRetriableException(aggregateException.InnerException, Policy.IgnoreInheritanceForRetryExceptions))
+                        if (Policy.IsRetriableException(aggregateException.InnerException, Policy.IgnoreInheritanceForRetryExceptions))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(aggregateException.InnerException);
@@ -110,7 +110,7 @@ namespace Proteus.Retry
                     }
                     catch (Exception exception)
                     {
-                        if (IsRetriableException(exception, Policy.IgnoreInheritanceForRetryExceptions))
+                        if (Policy.IsRetriableException(exception, Policy.IgnoreInheritanceForRetryExceptions))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(exception);
@@ -131,11 +131,11 @@ namespace Proteus.Retry
                     //check the timer to see if expired, and throw appropriate exception if so...
                     if (timerState.DurationExceeded)
                     {
-                        throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", MaxRetryDuration, retryCount));
+                        throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", Policy.MaxRetryDuration, retryCount));
                     }
 
 
-                } while (retryCount <= MaxRetries);
+                } while (retryCount <= Policy.MaxRetries);
 
                 var maxRetryCountReachedException =
                     new MaxRetryCountExceededException(
@@ -165,74 +165,5 @@ namespace Proteus.Retry
         {
             public bool DurationExceeded;
         }
-
-        #region IManageRetryPolicy Members
-
-        public int MaxRetries
-        {
-            get { return Policy.MaxRetries; }
-            set { Policy.MaxRetries = value; }
-        }
-
-        public IEnumerable<Type> RetriableExceptions
-        {
-            get { return Policy.RetriableExceptions; }
-        }
-
-        public TimeSpan MaxRetryDuration
-        {
-            get { return Policy.MaxRetryDuration; }
-            set { Policy.MaxRetryDuration = value; }
-        }
-
-        public bool IgnoreInheritanceForRetryExceptions
-        {
-            get { return Policy.IgnoreInheritanceForRetryExceptions; }
-            set { Policy.IgnoreInheritanceForRetryExceptions = value; }
-        }
-
-        public TimeSpan RetryDelayInterval
-        {
-            get { return Policy.RetryDelayInterval; }
-            set { Policy.RetryDelayInterval = value; }
-        }
-
-        public Func<TimeSpan> RetryDelayIntervalProvider
-        {
-            get { return Policy.RetryDelayIntervalProvider; }
-            set { Policy.RetryDelayIntervalProvider = value; }
-        }
-
-        public void RegisterRetriableException<TException>() where TException : Exception
-        {
-            Policy.RegisterRetriableException<TException>();
-        }
-
-        public void RegisterRetriableExceptions(IEnumerable<Type> exceptions)
-        {
-            Policy.RegisterRetriableExceptions(exceptions);
-        }
-
-        public bool IsRetriableException<TException>() where TException : Exception
-        {
-            return Policy.IsRetriableException<TException>();
-        }
-
-        public bool IsRetriableException<TException>(bool ignoreInheritance) where TException : Exception
-        {
-            return Policy.IsRetriableException<TException>(ignoreInheritance);
-        }
-
-        public bool IsRetriableException(Exception exception)
-        {
-            return Policy.IsRetriableException(exception);
-        }
-
-        public bool IsRetriableException(Exception exception, bool ignoreInheritance)
-        {
-            return Policy.IsRetriableException(exception, ignoreInheritance);
-        }
-
-        #endregion
     }
 }

@@ -62,10 +62,13 @@ namespace Proteus.Retry.Test
 
             var retry = new Retry
             {
-                MaxRetries = 10,
-                RetryDelayIntervalProvider = intervalCalculator.DoublePriorInterval
+                Policy =
+                {
+                    MaxRetries = 10,
+                    RetryDelayIntervalProvider = intervalCalculator.DoublePriorInterval
+                }
             };
-            retry.RegisterRetriableException<ExpectableTestExecption>();
+            retry.Policy.RegisterRetriableException<ExpectableTestExecption>();
 
             Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => instance.MethodThatAlwaysThrows()),
                 "Did not get to end of retries count!");
@@ -87,7 +90,7 @@ namespace Proteus.Retry.Test
             // during test-runs, else test results are too indeterminate to be useful
             var results = deltas.Select(delta => AreEqualWithinTolerance(delta, 1.0, 0.20)).ToList();
             var falseResultsCount = results.Count(r => r == false);
-            
+
             Assert.That((double)falseResultsCount / results.Count, Is.LessThanOrEqualTo(0.20));
 
         }
