@@ -29,7 +29,7 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
-        public void CanUseRetryDelayIntervalCalculator()
+        public void CanUseRetryDelayIntervalProvider()
         {
             var policy = new RetryPolicy();
             policy.RetryDelayIntervalProvider = () => TimeSpan.FromSeconds(1);
@@ -38,7 +38,7 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
-        public void RetryDelayIntervalCalculationStrategyOverridesExplicitlySetDelayInterval()
+        public void RetryDelayIntervalProviderStrategyOverridesExplicitlySetDelayInterval()
         {
             var policy = new RetryPolicy();
             policy.RetryDelayInterval = TimeSpan.FromHours(1);
@@ -50,13 +50,13 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
-        public void CanRespectRetryDelayIntervalCalculatorMethod()
+        public void CanRespectRetryDelayIntervalProviderMethod()
         {
-            var intervalCalculator = new TestRetryDelayIntervalProvider();
+            var intervalProvider = new TestRetryDelayIntervalProvider();
 
             var policy = new RetryPolicy();
-            policy.RetryDelayIntervalProvider = () => intervalCalculator.DoublePriorInterval();
-            Assume.That(intervalCalculator.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(1)));
+            policy.RetryDelayIntervalProvider = () => intervalProvider.DoublePriorInterval();
+            Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(1)),"initial interval not set to expected TimeSpan");
 
             var instance = new RetryDelayIntervalTestSpy();
 
@@ -65,7 +65,7 @@ namespace Proteus.Retry.Test
                 Policy =
                 {
                     MaxRetries = 10,
-                    RetryDelayIntervalProvider = intervalCalculator.DoublePriorInterval
+                    RetryDelayIntervalProvider = intervalProvider.DoublePriorInterval
                 }
             };
             retry.Policy.RegisterRetriableException<ExpectableTestExecption>();
@@ -104,13 +104,13 @@ namespace Proteus.Retry.Test
         [Test]
         public void TestRetryDelayIntervalProviderBehavesAsNeeded()
         {
-            var intervalCalculator = new TestRetryDelayIntervalProvider();
-            Assume.That(intervalCalculator.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(1)));
+            var intervalProvider = new TestRetryDelayIntervalProvider();
+            Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(1)));
 
-            Assert.That(intervalCalculator.DoublePriorInterval(), Is.EqualTo(TimeSpan.FromMilliseconds(2)));
-            Assert.That(intervalCalculator.DoublePriorInterval(), Is.EqualTo(TimeSpan.FromMilliseconds(4)));
+            Assert.That(intervalProvider.DoublePriorInterval(), Is.EqualTo(TimeSpan.FromMilliseconds(2)));
+            Assert.That(intervalProvider.DoublePriorInterval(), Is.EqualTo(TimeSpan.FromMilliseconds(4)));
 
-            Assert.That(intervalCalculator.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(4)));
+            Assert.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(4)));
 
         }
 
@@ -136,20 +136,20 @@ namespace Proteus.Retry.Test
         private class RetryDelayIntervalTestSpy
         {
             public readonly IList<long> Intervals = new List<long>();
-            private long _priorInvocationMs;
+            private long _priorInvocationTicks;
 
             public void MethodThatAlwaysThrows()
             {
-                long currentInvocationMs = DateTime.Now.Ticks;
+                long currentInvocationTicks = DateTime.Now.Ticks;
 
                 //if we're not in the first call to the method...
-                if (_priorInvocationMs > 0)
+                if (_priorInvocationTicks > 0)
                 {
                     //...add the interval to the collection for later assert
-                    Intervals.Add(currentInvocationMs - _priorInvocationMs);
+                    Intervals.Add(currentInvocationTicks - _priorInvocationTicks);
                 }
 
-                _priorInvocationMs = currentInvocationMs;
+                _priorInvocationTicks = currentInvocationTicks;
                 InvocationsOfMethodThatAlwaysThrows++;
                 throw new ExpectableTestExecption();
             }

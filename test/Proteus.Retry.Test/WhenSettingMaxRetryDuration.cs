@@ -13,9 +13,13 @@ namespace Proteus.Retry.Test
         public void RetriesAreCanceledOnceDurationExpires()
         {
             const int MAX_RETRIES = 20;
+            const int MAX_RETRY_DURATION = 5000;
+            const int SINGLE_INVOCATION_SLEEP_DURATION = 1000;
+
+            Assume.That(MAX_RETRY_DURATION < MAX_RETRIES * SINGLE_INVOCATION_SLEEP_DURATION);
 
             var policy = new RetryPolicy();
-            policy.MaxRetryDuration = TimeSpan.FromSeconds(5);
+            policy.MaxRetryDuration = TimeSpan.FromMilliseconds(MAX_RETRY_DURATION);
             policy.MaxRetries = MAX_RETRIES;
             policy.RegisterRetriableException<ExpectableTestExecption>();
 
@@ -23,7 +27,7 @@ namespace Proteus.Retry.Test
             
             var instance = new MaxRetryDurationTestSpy();
 
-            Assert.Throws<MaxRetryDurationExpiredException>(() => retry.Invoke(() => instance.MethodThatSleepsThenAlwaysThrows(1000)));
+            Assert.Throws<MaxRetryDurationExpiredException>(() => retry.Invoke(() => instance.MethodThatSleepsThenAlwaysThrowsAfter(SINGLE_INVOCATION_SLEEP_DURATION)));
 
             //cannot assert a specific value here b/c the timer isn't sufficiently fine-grained for consistent predictable results
             // (should be ~5 or 6 here, but *GUARANTEED* to be well-short of the MAX_RETRIES value)
@@ -33,7 +37,7 @@ namespace Proteus.Retry.Test
 
         private class MaxRetryDurationTestSpy
         {
-            public void MethodThatSleepsThenAlwaysThrows(int sleepMilliseconds)
+            public void MethodThatSleepsThenAlwaysThrowsAfter(int sleepMilliseconds)
             {
                 SleepMethodInvocations++;
                 Thread.Sleep(sleepMilliseconds);

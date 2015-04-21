@@ -59,6 +59,7 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
+        //TODO: re-think whether ignoring the invalid registration is the right choice (should this throw instead?)
         public void AddingMultipleExceptionsIgnoresTypesNotDerivedFromException()
         {
             var policy = new RetryPolicy();

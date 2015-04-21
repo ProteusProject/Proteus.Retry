@@ -30,7 +30,6 @@ namespace Proteus.Retry.Test
             var list = new ConstrainedTypesList<Exception>();
 
             Assert.Throws<ArgumentException>(() => list.Add(this.GetType()), ".Add(...) method did not prevent adding non-Exception-derived type.");
-            Assert.Throws<ArgumentException>(() => list.Add(this.GetType()), ".Add(...) method did not prevent adding non-Exception-derived type.");
             Assert.Throws<ArgumentException>(() => list[0] = this.GetType(), "Index[n] method did not prevent adding non-Exception-derived type.");
             Assert.Throws<ArgumentException>(() => list.Insert(0, this.GetType()), "Insert(...) method did not prevent adding non-Exception-derived type.");
         }

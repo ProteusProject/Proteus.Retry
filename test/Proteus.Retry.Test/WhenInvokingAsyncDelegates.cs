@@ -39,7 +39,7 @@ namespace Proteus.Retry.Test
 
             try
             {
-                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrows());
+                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrowsImmediately());
                 Assert.Fail("MaxRetryCountExceededException not thrown.");
             }
             catch (MaxRetryCountExceededException)
@@ -47,7 +47,7 @@ namespace Proteus.Retry.Test
                 Assert.Pass();
             }
 
-            Assert.That(instance.InvocationsOfAwaitableMethodThatAlwaysThrows, Is.EqualTo(MAX_RETRIES + 1));
+            Assert.That(instance.InvocationsOfAwaitableMethodThatAlwaysThrowsImmediately, Is.EqualTo(MAX_RETRIES + 1));
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace Proteus.Retry.Test
 
             try
             {
-                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrows());
+                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrowsImmediately());
                 Assert.Fail("MaxRetryCountExceededException not thrown.");
             }
             catch (MaxRetryCountExceededException exception)
@@ -113,7 +113,7 @@ namespace Proteus.Retry.Test
 
             try
             {
-                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrowsAndSleepsFor(2000));
+                await retry.Invoke(() => instance.AwaitableMethodThatAlwaysThrowsAfterSleepingFor(2000));
             }
             catch (MaxRetryDurationExpiredException)
             {
@@ -121,7 +121,7 @@ namespace Proteus.Retry.Test
             }
             catch (Exception exception)
             {
-                Assert.Fail(string.Format("Got: {0}: {1}", exception.GetType(), exception.Message));
+                Assert.Fail("Got: {0}: {1}", exception.GetType(), exception.Message);
             }
         }
 
@@ -163,26 +163,26 @@ namespace Proteus.Retry.Test
                 });
             }
 
-            public Task AwaitableMethodThatAlwaysThrows()
+            public Task AwaitableMethodThatAlwaysThrowsImmediately()
             {
-                InvocationsOfAwaitableMethodThatAlwaysThrows++;
+                InvocationsOfAwaitableMethodThatAlwaysThrowsImmediately++;
                 throw new ExpectableTestExecption();
             }
 
-            public Task AwaitableMethodThatAlwaysThrowsAndSleepsFor(int milliseconds)
+            public Task AwaitableMethodThatAlwaysThrowsAfterSleepingFor(int milliseconds)
             {
-                InvocationsOfAwaitableMethodThatAlwaysThrowsAndSleeps++;
+                InvocationsOfAwaitableMethodThatAlwaysThrowsAfterSleeping++;
                 Thread.Sleep(milliseconds);
                 throw new ExpectableTestExecption();
             }
 
-            public int InvocationsOfAwaitableMethodThatAlwaysThrowsAndSleeps { get; private set; }
-            public int InvocationsOfAwaitableMethodThatAlwaysThrows { get; private set; }
+            public int InvocationsOfAwaitableMethodThatAlwaysThrowsAfterSleeping { get; private set; }
+            public int InvocationsOfAwaitableMethodThatAlwaysThrowsImmediately { get; private set; }
             public int InvocationsOfAwaitableMethodThatThrowsUntil { get; private set; }
 
             public async Task AwaitableMethodThatAlwaysThrowsAndCallsNestedAwaitableMethodThatAlwaysThrows()
             {
-                await AwaitableMethodThatAlwaysThrows();
+                await AwaitableMethodThatAlwaysThrowsImmediately();
                 throw new ExpectableTestExecption();
             }
         }

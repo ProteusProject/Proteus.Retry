@@ -12,6 +12,13 @@ namespace Proteus.Retry.Test
     public class WhenSettingMaxRetries
     {
         [Test]
+        public void DefaultMaxRetriesIsZero()
+        {
+            var policy = new RetryPolicy();
+            Assert.That(policy.MaxRetries, Is.EqualTo(0));
+        }
+        
+        [Test]
         public void MaxRetriesAreRespected()
         {
             const int MAX_RETRIES = 3;
