@@ -52,8 +52,8 @@ namespace Proteus.Retry
 
             try
             {
-                //if the timer-dependent value has been set, create the timer (starts automatically)...
-                if (Policy.MaxRetryDuration != default(TimeSpan))
+                //if the timer-dependent value has been specified, create the timer (starts automatically)...
+                if (Policy.HasMaxRetryDuration)
                 {
                     timer = new Timer(MaxRetryDurationExpiredCallback, timerState, Policy.MaxRetryDuration, TimeSpan.FromSeconds(0));
                 }

@@ -9,6 +9,22 @@ namespace Proteus.Retry.Test
     [TestFixture]
     public class WhenSettingMaxRetryDuration
     {
+
+        [Test]
+        public void HasMaxRetryDurationReportsIfSet()
+        {
+            var policy = new RetryPolicy();
+            policy.MaxRetryDuration = TimeSpan.FromMilliseconds(10);
+            Assert.That(policy.HasMaxRetryDuration, Is.True);
+        }
+
+        [Test]
+        public void HasMaxRetryDurationReportsIfNotSet()
+        {
+            var policy = new RetryPolicy();
+            Assert.That(policy.HasMaxRetryDuration, Is.False);
+        }
+
         [Test]
         public void RetriesAreCanceledOnceDurationExpires()
         {
