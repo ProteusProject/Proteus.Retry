@@ -67,7 +67,7 @@ namespace Proteus.Retry
 
         public void RegisterRetriableExceptions(IEnumerable<Type> exceptions)
         {
-            foreach (var candidate in exceptions.Where(candidate => candidate.IsSubclassOf(typeof(Exception))))
+            foreach (var candidate in exceptions)
             {
                 _retriableExceptions.Add(candidate);
             }

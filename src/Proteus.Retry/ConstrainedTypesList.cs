@@ -13,7 +13,7 @@ namespace Proteus.Retry
             if (type == typeof(TConstraint) || type.IsSubclassOf(typeof(TConstraint)))
                 return;
 
-            throw new ArgumentException(string.Format("{0} can only contain {1} or types derived from {1}.", this.GetType().FullName, typeof(TConstraint).FullName));
+            throw new ArgumentException(string.Format("This instance of Proteus.Retry.ConstrainedTypesList<Type> can only accept {0} or types derived from {0}.", typeof(TConstraint).FullName));
         }
 
         #region IList<Type> members

@@ -59,18 +59,12 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
-        //TODO: re-think whether ignoring the invalid registration is the right choice (should this throw instead?)
-        public void AddingMultipleExceptionsIgnoresTypesNotDerivedFromException()
+        public void CanPreventAddingMultipleExceptionsContainingTypesNotDerivedFromException()
         {
             var policy = new RetryPolicy();
-
             var exceptions = new List<Type> { typeof(ArithmeticException), typeof(ExpectableTestExecption), typeof(Retry) };
 
-            policy.RegisterRetriableExceptions(exceptions);
-
-            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
-            Assert.That(policy.IsRetriableException<ArithmeticException>(), Is.True);
-            Assert.That(policy.RetriableExceptions, Has.No.Member(typeof(Retry)));
+            Assert.Throws<ArgumentException>(() => policy.RegisterRetriableExceptions(exceptions));
         }
 
         [Test]

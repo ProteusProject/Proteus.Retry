@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <None Include="Exceptions\ExceptionHierarchy.cd" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstrainedTypesList.cs" />
