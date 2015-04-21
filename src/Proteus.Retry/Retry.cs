@@ -131,7 +131,10 @@ namespace Proteus.Retry
                     //check the timer to see if expired, and throw appropriate exception if so...
                     if (timerState.DurationExceeded)
                     {
-                        throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", Policy.MaxRetryDuration, retryCount));
+                        throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", Policy.MaxRetryDuration, retryCount))
+                        {
+                            InnerExceptionHistory = _innerExceptionHistory
+                        };
                     }
 
 
