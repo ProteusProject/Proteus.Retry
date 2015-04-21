@@ -69,31 +69,19 @@ namespace Proteus.Retry
 
         public bool IsRetriableException<TException>() where TException : Exception
         {
-            //TODO: shouldn't this respect the value of IgnoreInheritanceForRetryExceptions?
-            return IsRetriableException<TException>(false);
-        }
-
-        public bool IsRetriableException<TException>(bool ignoreInheritance) where TException : Exception
-        {
-            return DoIsRetriableException(() => typeof(TException), ignoreInheritance);
+            return DoIsRetriableException(() => typeof(TException));
         }
 
         public bool IsRetriableException(Exception exception)
         {
-            //TODO: shouldn't this respect the value of IgnoreInheritanceForRetryExceptions?
-            return DoIsRetriableException(exception.GetType, false);
+            return DoIsRetriableException(exception.GetType);
         }
 
-        public bool IsRetriableException(Exception exception, bool ignoreInheritance)
-        {
-            return DoIsRetriableException(exception.GetType, ignoreInheritance);
-        }
-
-        private bool DoIsRetriableException(Func<Type> getTheType, bool ignoreInheritance)
+        private bool DoIsRetriableException(Func<Type> getTheType)
         {
             var specificTypeMatched = _retriableExceptions.Contains(getTheType());
 
-            if (IgnoreInheritanceForRetryExceptions || ignoreInheritance)
+            if (IgnoreInheritanceForRetryExceptions)
             {
                 return specificTypeMatched;
             }

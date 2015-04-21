@@ -97,7 +97,7 @@ namespace Proteus.Retry
                     }
                     catch (AggregateException aggregateException)
                     {
-                        if (Policy.IsRetriableException(aggregateException.InnerException, Policy.IgnoreInheritanceForRetryExceptions))
+                        if (Policy.IsRetriableException(aggregateException.InnerException))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(aggregateException.InnerException);
@@ -110,7 +110,7 @@ namespace Proteus.Retry
                     }
                     catch (Exception exception)
                     {
-                        if (Policy.IsRetriableException(exception, Policy.IgnoreInheritanceForRetryExceptions))
+                        if (Policy.IsRetriableException(exception))
                         {
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(exception);
