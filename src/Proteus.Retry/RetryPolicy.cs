@@ -92,7 +92,6 @@ namespace Proteus.Retry
         private bool DoIsRetriableException(Func<Type> getTheType, bool ignoreInheritance)
         {
             var specificTypeMatched = _retriableExceptions.Contains(getTheType());
-            var typeMatchedToAncestor = _retriableExceptions.Any(registeredException => getTheType().IsSubclassOf(registeredException));
 
             if (IgnoreInheritanceForRetryExceptions || ignoreInheritance)
             {
@@ -100,6 +99,7 @@ namespace Proteus.Retry
             }
             else
             {
+                var typeMatchedToAncestor = _retriableExceptions.Any(registeredException => getTheType().IsSubclassOf(registeredException));
                 return specificTypeMatched || typeMatchedToAncestor;
             }
         }
