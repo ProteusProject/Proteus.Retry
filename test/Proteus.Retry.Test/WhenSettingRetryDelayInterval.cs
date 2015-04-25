@@ -56,7 +56,7 @@ namespace Proteus.Retry.Test
 
             var policy = new RetryPolicy();
             policy.RetryDelayIntervalProvider = () => intervalProvider.DoublePriorInterval();
-            Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(1)),"initial interval not set to expected TimeSpan");
+            Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(10)),"initial interval not set to expected TimeSpan");
 
             var instance = new RetryDelayIntervalTestSpy();
 
@@ -64,7 +64,7 @@ namespace Proteus.Retry.Test
             {
                 Policy =
                 {
-                    MaxRetries = 10,
+                    MaxRetries = 5,
                     RetryDelayIntervalProvider = intervalProvider.DoublePriorInterval
                 }
             };
@@ -76,8 +76,8 @@ namespace Proteus.Retry.Test
             var deltas = new List<double>();
 
 
-            //the first intervasl measure is always invalid so have to start Asserts with the second pair
-            // of measuresments (which means index = 2)
+            //the first interval measure is always invalid so have to start Asserts with the second pair
+            // of measurements (which means index = 2)
             for (var i = 2; i < instance.Intervals.Count; i++)
             {
                 var currentInterval = instance.Intervals[i];
@@ -86,12 +86,12 @@ namespace Proteus.Retry.Test
 
             }
 
-            //permit up to 20% of the timings to be out-of-spec; necessary to accommodate variations in timing
-            // during test-runs, else test results are too indeterminate to be useful
+            //permit up to 33% of the timings to be out-of-spec; necessary to accommodate variations in timing
+            // during test-runs, else test results are too indeterminate to be useful :(
             var results = deltas.Select(delta => AreEqualWithinTolerance(delta, 1.0, 0.20)).ToList();
             var falseResultsCount = results.Count(r => r == false);
 
-            Assert.That((double)falseResultsCount / results.Count, Is.LessThanOrEqualTo(0.20));
+            Assert.That((double)falseResultsCount / results.Count, Is.LessThanOrEqualTo(0.34));
 
         }
 
@@ -116,7 +116,7 @@ namespace Proteus.Retry.Test
 
         private class TestRetryDelayIntervalProvider
         {
-            private TimeSpan _interval = TimeSpan.FromMilliseconds(1);
+            private TimeSpan _interval = TimeSpan.FromMilliseconds(10);
 
             public TimeSpan Interval
             {
