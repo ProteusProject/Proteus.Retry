@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Proteus.Retry
 {
@@ -26,6 +28,36 @@ namespace Proteus.Retry
                 return;
 
             throw new ArgumentException(string.Format("This instance of Proteus.Retry.ConstrainedTypesList<Type> can only accept {0} or types derived from {0}.", typeof(TConstraint).FullName));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+
+            builder.Append("{ ");
+
+            for (int i = 0; i < _inner.Count; i++)
+            {
+                builder.Append(_inner[i]);
+                if (i < _inner.Count -1)
+                {
+                    builder.Append(", ");
+                }
+            }
+
+            if (_inner.Count == 0)
+            {
+                builder.Append("--NONE--");
+            }
+
+            builder.Append(" }");
+
+
+            return builder.ToString();
         }
 
         #region IList<Type> members

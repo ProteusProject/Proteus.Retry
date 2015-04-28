@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Proteus.Retry
 {
@@ -161,6 +162,23 @@ namespace Proteus.Retry
                 var typeMatchedToAncestor = _retriableExceptions.Any(registeredException => getTheType().IsSubclassOf(registeredException));
                 return specificTypeMatched || typeMatchedToAncestor;
             }
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder(base.ToString());
+
+            var types = new ConstrainedTypesList<Exception>();
+
+            foreach (var retriableException in RetriableExceptions)
+            {
+                types.Add(retriableException);
+            }
+
+
+            builder.AppendFormat(": MaxRetries={0}, MaxRetryDuration={1}, RetryDelayInterval={2}, IgnoreInheritanceForRetriableExceptions={3}, RetriableExceptions={4}", MaxRetries, MaxRetryDuration, RetryDelayInterval, IgnoreInheritanceForRetryExceptions, types);
+
+            return builder.ToString();
         }
     }
 }

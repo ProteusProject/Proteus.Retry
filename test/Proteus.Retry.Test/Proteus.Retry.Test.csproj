@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WhenCallingToString.cs" />
     <Compile Include="WhenExecutingHappyPathWithRetry.cs" />
     <Compile Include="WhenInvokingAsyncDelegates.cs" />
     <Compile Include="ExpectableTestExecption.cs" />
