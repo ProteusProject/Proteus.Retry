@@ -105,12 +105,12 @@ namespace Proteus.Retry.Test
         public void TestRetryDelayIntervalProviderBehavesAsNeeded()
         {
             var intervalProvider = new TestRetryDelayIntervalProvider();
-            Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(1)));
+            Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(10)));
 
-            Assert.That(intervalProvider.DoublePriorInterval(), Is.EqualTo(TimeSpan.FromMilliseconds(2)));
-            Assert.That(intervalProvider.DoublePriorInterval(), Is.EqualTo(TimeSpan.FromMilliseconds(4)));
+            Assert.That(intervalProvider.DoublePriorInterval(), Is.EqualTo(TimeSpan.FromMilliseconds(20)));
+            Assert.That(intervalProvider.DoublePriorInterval(), Is.EqualTo(TimeSpan.FromMilliseconds(40)));
 
-            Assert.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(4)));
+            Assert.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(40)));
 
         }
 
