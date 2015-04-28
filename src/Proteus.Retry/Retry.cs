@@ -9,18 +9,39 @@ using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
 {
+    /// <summary>
+    /// Class Retry.
+    /// </summary>
     public class Retry
     {
+        /// <summary>
+        /// The inner-exception history
+        /// </summary>
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
 
+        /// <summary>
+        /// Gets or sets the Retry Policy.
+        /// </summary>
+        /// <value>The policy.</value>
         public IManageRetryPolicy Policy { get; set; }
+        /// <summary>
+        /// Sets the logger.
+        /// </summary>
+        /// <value>The logger.</value>
         public ILog Logger { private get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Retry"/> class.
+        /// </summary>
         public Retry()
             : this(new RetryPolicy())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Retry"/> class.
+        /// </summary>
+        /// <param name="policy">The retry policy.</param>
         public Retry(IManageRetryPolicy policy)
         {
             Policy = policy;
@@ -28,6 +49,12 @@ namespace Proteus.Retry
         }
 
 
+        /// <summary>
+        /// Invokes the specified function, respecting the current retry policy.
+        /// </summary>
+        /// <typeparam name="TReturn">The type of the return value from the function.</typeparam>
+        /// <param name="func">The function to invoke.</param>
+        /// <returns>TReturn.</returns>
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
             Logger.DebugFormat("Invoking Func {0}", func);
@@ -38,6 +65,10 @@ namespace Proteus.Retry
             return returnValue;
         }
 
+        /// <summary>
+        /// Invokes the specified action, respecting the current retry policy.
+        /// </summary>
+        /// <param name="action">The action to invoke.</param>
         public void Invoke(Action action)
         {
             Logger.DebugFormat("Invoking Action {0}", action);
@@ -49,6 +80,14 @@ namespace Proteus.Retry
             DoInvoke(action, out returnValue);
         }
 
+        /// <summary>
+        /// Actually does the invocation of the func or the action.
+        /// </summary>
+        /// <typeparam name="TReturn">The type of the return value.</typeparam>
+        /// <param name="delegate">The delegate to invoke.</param>
+        /// <param name="returnValue">The return value.</param>
+        /// <exception cref="System.AggregateException"></exception>
+        /// <exception cref="Proteus.Retry.Exceptions.MaxRetryDurationExpiredException"></exception>
         private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
         {
             var retryCount = 0;
@@ -165,14 +204,24 @@ namespace Proteus.Retry
             }
         }
 
+        /// <summary>
+        /// Callback invoked when the max retry duration has expired.
+        /// </summary>
+        /// <param name="state">The state.</param>
         private void MaxRetryDurationExpiredCallback(object state)
         {
             var timerState = (TimerCallbackState)state;
             timerState.DurationExceeded = true;
         }
 
+        /// <summary>
+        /// Class TimerCallbackState.
+        /// </summary>
         private class TimerCallbackState
         {
+            /// <summary>
+            /// Flag indicating that the duration has been exceeded
+            /// </summary>
             public bool DurationExceeded;
         }
 
