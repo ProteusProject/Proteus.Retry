@@ -22,6 +22,7 @@ namespace Proteus.Retry
         /// </summary>
         /// <value>The policy.</value>
         public IManageRetryPolicy Policy { get; set; }
+
         /// <summary>
         /// Sets the logger.
         /// </summary>
@@ -55,10 +56,12 @@ namespace Proteus.Retry
         /// <returns>TReturn.</returns>
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
-            Logger.DebugFormat("Invoking Func {0}", func);
+            Logger.DebugFormat("Begin invoking Func {0} using {1}", func, Policy);
 
             TReturn returnValue;
             DoInvoke(func, out returnValue);
+
+            Logger.DebugFormat("Finished invoking Func {0} using {1}", func, Policy);
 
             return returnValue;
         }
@@ -69,13 +72,16 @@ namespace Proteus.Retry
         /// <param name="action">The action to invoke.</param>
         public void Invoke(Action action)
         {
-            Logger.DebugFormat("Invoking Action {0}", action);
+            Logger.DebugFormat("Begin invoking Action using {0}", Policy);
 
             //necessary evil to keep the compiler happy
             // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
             // invokes and Action (with no return value)
             object returnValue;
             DoInvoke(action, out returnValue);
+
+            Logger.DebugFormat("Finished invoking Action using {0}", Policy);
+
         }
 
         private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
@@ -91,6 +97,8 @@ namespace Proteus.Retry
                 //if the timer-dependent value has been specified, create the timer (starts automatically)...
                 if (Policy.HasMaxRetryDuration)
                 {
+                    Logger.DebugFormat("MaxRetryDuration setting detected ({0}), starting timer to track retry duration expiry.", Policy.MaxRetryDuration);
+
                     timer = new Timer(MaxRetryDurationExpiredCallback, timerState, Policy.MaxRetryDuration, TimeSpan.FromSeconds(0));
                 }
 
@@ -167,6 +175,8 @@ namespace Proteus.Retry
                     //check the timer to see if expired, and throw appropriate exception if so...
                     if (timerState.DurationExceeded)
                     {
+                        Logger.DebugFormat("MaxRetryDuration of {0} expired without completing invocation; throwing MaxRetryDurationExpiredException", Policy.MaxRetryDuration);
+
                         throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", Policy.MaxRetryDuration, retryCount))
                         {
                             InnerExceptionHistory = _innerExceptionHistory
@@ -175,6 +185,8 @@ namespace Proteus.Retry
 
 
                 } while (retryCount <= Policy.MaxRetries);
+
+                Logger.DebugFormat("MaxRetries of {0} reached without completing invocation; throwing MaxRetryCountExcededException", Policy.MaxRetries);
 
                 var maxRetryCountReachedException =
                     new MaxRetryCountExceededException(
