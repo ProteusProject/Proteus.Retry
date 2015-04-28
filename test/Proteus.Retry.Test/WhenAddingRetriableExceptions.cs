@@ -113,7 +113,7 @@ namespace Proteus.Retry.Test
             var retry = new Retry(policy);
             var instance = new RetriableExceptionsTestSpy();
 
-            //since only the base type ExpectableTestException is registered as retriable, we should get the un-retried derived type execption here...
+            //since only the base type ExpectableTestException is registered as retriable, we should get the un-retried derived type exception here...
             Assert.Throws<InheritedTestException>(() => retry.Invoke(() => instance.ThrowException<InheritedTestException>()));
         }
 
