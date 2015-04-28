@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
+using Common.Logging.Simple;
 using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
@@ -23,21 +24,31 @@ namespace Proteus.Retry
         }
 
         public Retry(IManageRetryPolicy policy)
+            : this(policy, new DebugOutLogger("Proteus.Retry.Retry", LogLevel.Debug, true, true, true, "yyyy/MM/dd HH:mm:ss:fff"))
         {
+        }
+
+        public Retry(IManageRetryPolicy policy, ILog logger)
+        {
+            _logger = logger;
             Policy = policy;
-            _logger = LogManager.GetLogger(this.GetType());
         }
 
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
+           _logger.DebugFormat("Invoking Func {0} with return type {1}", func, typeof(TReturn));
+           _logger.Debug("debug message here");
+
             TReturn returnValue;
             DoInvoke(func, out returnValue);
-            
+
             return returnValue;
         }
 
         public void Invoke(Action action)
         {
+            _logger.DebugFormat("Invoking Action {0}", action);
+
             //necessary evil to keep the compiler happy
             // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
             // invokes and Action (with no return value)
@@ -163,7 +174,7 @@ namespace Proteus.Retry
 
         private void MaxRetryDurationExpiredCallback(object state)
         {
-            var timerState = (TimerCallbackState) state;
+            var timerState = (TimerCallbackState)state;
             timerState.DurationExceeded = true;
         }
 
