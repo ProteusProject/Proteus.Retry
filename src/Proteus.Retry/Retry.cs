@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Common.Logging;
 using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
@@ -14,6 +15,7 @@ namespace Proteus.Retry
 
         public IManageRetryPolicy Policy { get; set; }
 
+        private ILog _logger;
 
         public Retry()
             : this(new RetryPolicy())
@@ -23,6 +25,7 @@ namespace Proteus.Retry
         public Retry(IManageRetryPolicy policy)
         {
             Policy = policy;
+            _logger = LogManager.GetLogger(this.GetType());
         }
 
         public TReturn Invoke<TReturn>(Func<TReturn> func)
