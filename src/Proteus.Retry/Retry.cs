@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using Common.Logging.Simple;
 using Proteus.Retry.Exceptions;
 
 namespace Proteus.Retry
@@ -15,8 +14,7 @@ namespace Proteus.Retry
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
 
         public IManageRetryPolicy Policy { get; set; }
-
-        private ILog _logger;
+        public ILog Logger { private get; set; }
 
         public Retry()
             : this(new RetryPolicy())
@@ -24,20 +22,15 @@ namespace Proteus.Retry
         }
 
         public Retry(IManageRetryPolicy policy)
-            : this(policy, new DebugOutLogger("Proteus.Retry.Retry", LogLevel.Debug, true, true, true, "yyyy/MM/dd HH:mm:ss:fff"))
         {
+            Policy = policy;
+            Logger = new InternalNoOpLogger();
         }
 
-        public Retry(IManageRetryPolicy policy, ILog logger)
-        {
-            _logger = logger;
-            Policy = policy;
-        }
 
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
-           _logger.DebugFormat("Invoking Func {0} with return type {1}", func, typeof(TReturn));
-           _logger.Debug("debug message here");
+            Logger.DebugFormat("Invoking Func {0}", func);
 
             TReturn returnValue;
             DoInvoke(func, out returnValue);
@@ -47,7 +40,7 @@ namespace Proteus.Retry
 
         public void Invoke(Action action)
         {
-            _logger.DebugFormat("Invoking Action {0}", action);
+            Logger.DebugFormat("Invoking Action {0}", action);
 
             //necessary evil to keep the compiler happy
             // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
@@ -182,5 +175,6 @@ namespace Proteus.Retry
         {
             public bool DurationExceeded;
         }
+
     }
 }

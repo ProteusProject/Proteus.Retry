@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Logging;
 using NUnit.Framework;
 
 namespace Proteus.Retry.Test
@@ -13,12 +14,16 @@ namespace Proteus.Retry.Test
         [Test]
         public void GeneralScenario1()
         {
+            var logger = LogManager.GetLogger(this.GetType());
+
             var instance = new TestObject();
 
             var policy = new RetryPolicy() { MaxRetries = 20 };
             policy.RegisterRetriableException<ExpectableTestExecption>();
 
             var retry = new Retry(policy);
+
+            retry.Logger = logger;
 
             var result = retry.Invoke(() => instance.IntReturningMethod(1, "func invoked"));
 
