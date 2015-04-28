@@ -148,11 +148,6 @@ namespace Proteus.Retry
             return DoIsRetriableException(exception.GetType);
         }
 
-        /// <summary>
-        /// Does the is retriable exception.
-        /// </summary>
-        /// <param name="getTheType">Type of the get the.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         private bool DoIsRetriableException(Func<Type> getTheType)
         {
             var specificTypeMatched = _retriableExceptions.Contains(getTheType());

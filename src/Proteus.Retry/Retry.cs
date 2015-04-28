@@ -14,9 +14,6 @@ namespace Proteus.Retry
     /// </summary>
     public class Retry
     {
-        /// <summary>
-        /// The inner-exception history
-        /// </summary>
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
 
         /// <summary>
@@ -80,14 +77,6 @@ namespace Proteus.Retry
             DoInvoke(action, out returnValue);
         }
 
-        /// <summary>
-        /// Actually does the invocation of the func or the action.
-        /// </summary>
-        /// <typeparam name="TReturn">The type of the return value.</typeparam>
-        /// <param name="delegate">The delegate to invoke.</param>
-        /// <param name="returnValue">The return value.</param>
-        /// <exception cref="System.AggregateException"></exception>
-        /// <exception cref="Proteus.Retry.Exceptions.MaxRetryDurationExpiredException"></exception>
         private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
         {
             var retryCount = 0;
@@ -204,19 +193,12 @@ namespace Proteus.Retry
             }
         }
 
-        /// <summary>
-        /// Callback invoked when the max retry duration has expired.
-        /// </summary>
-        /// <param name="state">The state.</param>
         private void MaxRetryDurationExpiredCallback(object state)
         {
             var timerState = (TimerCallbackState)state;
             timerState.DurationExceeded = true;
         }
 
-        /// <summary>
-        /// Class TimerCallbackState.
-        /// </summary>
         private class TimerCallbackState
         {
             /// <summary>
