@@ -44,6 +44,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\common-logging\Common.Logging.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging.NLog32">
+      <HintPath>..\..\lib\common-logging\Common.Logging.NLog32.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\lib\nlog\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
