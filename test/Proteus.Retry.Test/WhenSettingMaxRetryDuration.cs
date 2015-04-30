@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading;
+using Common.Logging;
 using NUnit.Framework;
 using Proteus.Retry.Exceptions;
 
@@ -40,6 +41,7 @@ namespace Proteus.Retry.Test
             policy.RegisterRetriableException<ExpectableTestExecption>();
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
             
             var instance = new MaxRetryDurationTestSpy();
 

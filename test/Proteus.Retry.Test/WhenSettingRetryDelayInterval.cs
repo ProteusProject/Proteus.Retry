@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Metadata;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using Common.Logging;
 using NUnit.Framework;
 using Proteus.Retry.Exceptions;
 
@@ -66,8 +67,9 @@ namespace Proteus.Retry.Test
                 {
                     MaxRetries = 5,
                     RetryDelayIntervalProvider = intervalProvider.DoublePriorInterval
-                }
-            };
+                },
+                Logger= LogManager.GetLogger(this.GetType())
+        };
             retry.Policy.RegisterRetriableException<ExpectableTestExecption>();
 
             Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => instance.MethodThatAlwaysThrows()),

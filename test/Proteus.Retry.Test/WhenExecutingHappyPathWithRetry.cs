@@ -3,6 +3,7 @@ using System.IO;
 using System.Management.Instrumentation;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Common.Logging;
 using NUnit.Framework;
 
 namespace Proteus.Retry.Test
@@ -31,6 +32,7 @@ namespace Proteus.Retry.Test
             nakedInvocationStopwatch.Stop();
 
             var retry = new Retry();
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             var retryInvocationStopwatch = new Stopwatch();
 

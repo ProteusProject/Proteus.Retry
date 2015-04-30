@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Common.Logging;
 using NUnit.Framework;
 using Proteus.Retry.Exceptions;
 
@@ -15,6 +16,7 @@ namespace Proteus.Retry.Test
         public async Task CanAwaitSuccessfulInvocation()
         {
             var retry = new Retry();
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             var instance = new TestSpy();
 
@@ -34,6 +36,7 @@ namespace Proteus.Retry.Test
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             var instance = new TestSpy();
 
@@ -61,6 +64,7 @@ namespace Proteus.Retry.Test
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             var instance = new TestSpy();
 
@@ -86,6 +90,7 @@ namespace Proteus.Retry.Test
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             var instance = new TestSpy();
 
@@ -110,6 +115,7 @@ namespace Proteus.Retry.Test
             var instance = new TestSpy();
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             try
             {

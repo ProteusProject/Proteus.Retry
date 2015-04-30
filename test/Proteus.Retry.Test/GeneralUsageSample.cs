@@ -14,8 +14,6 @@ namespace Proteus.Retry.Test
         [Test]
         public void GeneralScenario1()
         {
-            var logger = LogManager.GetLogger(this.GetType());
-
             var instance = new TestObject();
 
             var policy = new RetryPolicy() { MaxRetries = 20 };
@@ -23,7 +21,7 @@ namespace Proteus.Retry.Test
 
             var retry = new Retry(policy);
 
-            retry.Logger = logger;
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             var result = retry.Invoke(() => instance.IntReturningMethod(1, "func invoked"));
 

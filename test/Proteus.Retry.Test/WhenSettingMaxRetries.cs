@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Logging;
 using NUnit.Framework;
 using Proteus.Retry.Exceptions;
 
@@ -29,6 +30,7 @@ namespace Proteus.Retry.Test
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => testObject.DoWorkThatAlwaysThrows()));
             Assert.That(testObject.InvocationsOfDoWorkThatAlwaysThrows, Is.EqualTo(MAX_RETRIES + 1));
@@ -43,6 +45,7 @@ namespace Proteus.Retry.Test
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => testObject.DoWorkThatAlwaysThrows()));
             Assert.That(testObject.InvocationsOfDoWorkThatAlwaysThrows, Is.EqualTo(1));
@@ -63,6 +66,7 @@ namespace Proteus.Retry.Test
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             retry.Invoke(() => testObject.DoWorkThatThrowsUntilInvocationCountIs(THROW_UNTIL));
 
@@ -87,6 +91,7 @@ namespace Proteus.Retry.Test
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
             var retry = new Retry(policy);
+            retry.Logger = LogManager.GetLogger(this.GetType());
 
             try
             {
