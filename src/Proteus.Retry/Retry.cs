@@ -156,7 +156,7 @@ namespace Proteus.Retry
                         if (Policy.IsRetriableException(aggregateException.InnerException))
                         {
                             LogRetriableExceptionDetected(aggregateException.InnerException);
-                            
+
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(aggregateException.InnerException);
                         }
@@ -188,15 +188,26 @@ namespace Proteus.Retry
 
                     retryCount++;
 
-                    var retryDelayIntervalBeforePausing = Policy.RetryDelayInterval;
+                    //if the caller has set a non-zero RetryDelayInterval, then let's wait for that duration
+                    if (Policy.RetryDelayInterval != default(TimeSpan) || null != Policy.RetryDelayIntervalProvider)
+                    {
+                        var retryDelayIntervalBeforeWaiting = Policy.RetryDelayInterval;
 
-                    Logger.DebugFormat("RetryId: {0} - Pausing before next retry attempt for Delay Interval of {1}.", _currentRetryId, retryDelayIntervalBeforePausing);
+                        Logger.DebugFormat(
+                            "RetryId: {0} - Pausing before next retry attempt for Delay Interval of {1}.",
+                            _currentRetryId, retryDelayIntervalBeforeWaiting);
 
-                    //PCL doesn't offer Thread.Sleep so this hack will provide equivalent pause of the current thread for us ...
-                    var sleepHack = new ManualResetEvent(false);
-                    sleepHack.WaitOne(Policy.NextRetryDelayInterval());
+                        //PCL doesn't offer Thread.Sleep so this hack will provide equivalent pause of the current thread for us ...
+                        var sleepHack = new ManualResetEvent(false);
+                        sleepHack.WaitOne(Policy.NextRetryDelayInterval());
 
-                    Logger.DebugFormat("RetryId: {0} - Delay Interval of {1} expired; resuming retry attempts.", _currentRetryId, retryDelayIntervalBeforePausing);
+                        Logger.DebugFormat("RetryId: {0} - Delay Interval of {1} expired; resuming retry attempts.",
+                            _currentRetryId, retryDelayIntervalBeforeWaiting);
+                    }
+                    else
+                    {
+                        Logger.DebugFormat("RetryId: {0} - No RetryDelayInterval configured; skipping delay and retrying immediately.", _currentRetryId);
+                    }
 
 
                     //check the timer to see if expired, and throw appropriate exception if so...
