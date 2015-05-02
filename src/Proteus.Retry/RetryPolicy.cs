@@ -139,7 +139,7 @@ namespace Proteus.Retry
         /// <returns><c>true</c> if [is retriable exception]; otherwise, <c>false</c>.</returns>
         public bool IsRetriableException<TException>() where TException : Exception
         {
-            return DoIsRetriableException(() => typeof(TException));
+            return IsRetriableException(() => typeof(TException));
         }
 
         /// <summary>
@@ -149,10 +149,10 @@ namespace Proteus.Retry
         /// <returns><c>true</c> if [is retriable exception]; otherwise, <c>false</c>.</returns>
         public bool IsRetriableException(Exception exception)
         {
-            return DoIsRetriableException(exception.GetType);
+            return IsRetriableException(exception.GetType);
         }
 
-        private bool DoIsRetriableException(Func<Type> getTheType)
+        private bool IsRetriableException(Func<Type> getTheType)
         {
             var specificTypeMatched = _retriableExceptions.Contains(getTheType());
 
