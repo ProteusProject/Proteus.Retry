@@ -16,6 +16,7 @@ namespace Proteus.Retry
     public class Retry
     {
         private readonly IList<Exception> _innerExceptionHistory = new List<Exception>();
+        private Guid _currentRetryId;
 
         /// <summary>
         /// Gets or sets the Retry Policy.
@@ -56,12 +57,14 @@ namespace Proteus.Retry
         /// <returns>TReturn.</returns>
         public TReturn Invoke<TReturn>(Func<TReturn> func)
         {
-            Logger.DebugFormat("Begin invoking Func {0} using {1}", func, Policy);
+            _currentRetryId = Guid.NewGuid();
+
+            Logger.DebugFormat("RetryId: {0} - Begin invoking Func {1} using {2}", _currentRetryId, func, Policy);
 
             TReturn returnValue;
             DoInvoke(func, out returnValue);
 
-            Logger.DebugFormat("Finished invoking Func {0} using {1}", func, Policy);
+            Logger.DebugFormat("RetryId: {0} - Finished invoking Func {1} using {2}", _currentRetryId, func, Policy);
 
             return returnValue;
         }
@@ -72,7 +75,9 @@ namespace Proteus.Retry
         /// <param name="action">The action to invoke.</param>
         public void Invoke(Action action)
         {
-            Logger.DebugFormat("Begin invoking Action using {0}", Policy);
+            _currentRetryId = Guid.NewGuid();
+
+            Logger.DebugFormat("RetryId: {0} - Begin invoking Action using {1}", _currentRetryId, Policy);
 
             //necessary evil to keep the compiler happy
             // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
@@ -80,7 +85,7 @@ namespace Proteus.Retry
             object returnValue;
             DoInvoke(action, out returnValue);
 
-            Logger.DebugFormat("Finished invoking Action using {0}", Policy);
+            Logger.DebugFormat("RetryId: {0} - Finished invoking Action using {1}", _currentRetryId, Policy);
 
         }
 
@@ -97,7 +102,7 @@ namespace Proteus.Retry
                 //if the timer-dependent value has been specified, create the timer (starts automatically)...
                 if (Policy.HasMaxRetryDuration)
                 {
-                    Logger.DebugFormat("MaxRetryDuration setting detected ({0}), starting timer to track retry duration expiry.", Policy.MaxRetryDuration);
+                    Logger.DebugFormat("RetryId: {0} - MaxRetryDuration setting detected ({1}), starting timer to track retry duration expiry.", _currentRetryId, Policy.MaxRetryDuration);
 
                     timer = new Timer(MaxRetryDurationExpiredCallback, timerState, Policy.MaxRetryDuration, TimeSpan.FromSeconds(0));
                 }
@@ -175,7 +180,7 @@ namespace Proteus.Retry
                     //check the timer to see if expired, and throw appropriate exception if so...
                     if (timerState.DurationExceeded)
                     {
-                        Logger.DebugFormat("MaxRetryDuration of {0} expired without completing invocation; throwing MaxRetryDurationExpiredException", Policy.MaxRetryDuration);
+                        Logger.DebugFormat("RetryId: {0} - MaxRetryDuration of {1} expired without completing invocation; throwing MaxRetryDurationExpiredException", _currentRetryId, Policy.MaxRetryDuration);
 
                         throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", Policy.MaxRetryDuration, retryCount))
                         {
@@ -186,7 +191,7 @@ namespace Proteus.Retry
 
                 } while (retryCount <= Policy.MaxRetries);
 
-                Logger.DebugFormat("MaxRetries of {0} reached without completing invocation; throwing MaxRetryCountExcededException", Policy.MaxRetries);
+                Logger.DebugFormat("RetryId: {0} - MaxRetries of {1} reached without completing invocation; throwing MaxRetryCountExcededException", _currentRetryId, Policy.MaxRetries);
 
                 var maxRetryCountReachedException =
                     new MaxRetryCountExceededException(

@@ -179,7 +179,6 @@ namespace Proteus.Retry
                 types.Add(retriableException);
             }
 
-
             builder.AppendFormat(": MaxRetries={0}, MaxRetryDuration={1}, RetryDelayInterval={2}, IgnoreInheritanceForRetriableExceptions={3}, RetriableExceptions={4}", MaxRetries, MaxRetryDuration, RetryDelayInterval, IgnoreInheritanceForRetryExceptions, types);
 
             return builder.ToString();
