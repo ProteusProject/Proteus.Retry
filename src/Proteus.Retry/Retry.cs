@@ -119,10 +119,13 @@ namespace Proteus.Retry
 
                         if (func != null)
                         {
+                            Logger.DebugFormat("RetryId: {0} - Func Invocation Attempt #{1}", _currentRetryId, retryCount + 1);
                             returnValue = func.Invoke();
                         }
                         else
                         {
+                            Logger.DebugFormat("RetryId: {0} - Action Invocation Attempt #{1}", _currentRetryId, retryCount + 1);
+
                             ((Action)@delegate).Invoke();
                         }
 
@@ -130,8 +133,12 @@ namespace Proteus.Retry
 
                         if (returnTask != null)
                         {
+                            Logger.DebugFormat("RetryId: {0} - Invocation returned a Task.", _currentRetryId);
+
                             if (returnTask.Status == TaskStatus.Faulted)
                             {
+                                Logger.DebugFormat("RetryId: {0} - Task determined to be in FAULTED state.", _currentRetryId);
+
                                 //if in faulted state we have to tell the Task infrastructure we're handling ALL the exceptions
                                 returnTask.Exception.Handle(ex => true);
 
@@ -148,11 +155,15 @@ namespace Proteus.Retry
                     {
                         if (Policy.IsRetriableException(aggregateException.InnerException))
                         {
+                            LogRetriableExceptionDetected(aggregateException.InnerException);
+                            
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(aggregateException.InnerException);
                         }
                         else
                         {
+                            LogNonRetriableExceptionDetected(aggregateException.InnerException);
+
                             //if not an expected (retriable) exception, just re-throw it to calling code
                             throw;
                         }
@@ -161,11 +172,15 @@ namespace Proteus.Retry
                     {
                         if (Policy.IsRetriableException(exception))
                         {
+                            LogRetriableExceptionDetected(exception);
+
                             //swallow because we want/need to remain intact for next retry attempt
                             _innerExceptionHistory.Add(exception);
                         }
                         else
                         {
+                            LogNonRetriableExceptionDetected(exception);
+
                             //if not an expected (retriable) exception, just re-throw it to calling code
                             throw;
                         }
@@ -209,6 +224,17 @@ namespace Proteus.Retry
                 if (timer != null)
                     timer.Dispose();
             }
+        }
+
+        private void LogNonRetriableExceptionDetected(Exception exception)
+        {
+            Logger.DebugFormat("RetryId: {0} - Exception of type {1} is not registered as retriable; rethrowing exception.", _currentRetryId, exception.GetType());
+
+        }
+
+        private void LogRetriableExceptionDetected(Exception exception)
+        {
+            Logger.DebugFormat("RetryId: {0} - Exception of type {1} is registered as retriable, will retry.", _currentRetryId, exception.GetType());
         }
 
         private void MaxRetryDurationExpiredCallback(object state)
