@@ -73,18 +73,21 @@ namespace Proteus.Retry
         /// Gets or sets the retry delay interval.
         /// </summary>
         /// <value>The retry delay interval.</value>
-        public TimeSpan RetryDelayInterval
+        public TimeSpan RetryDelayInterval { get; set; }
+
+
+        /// <summary>
+        /// Gets the next retry delay interval.
+        /// </summary>
+        /// <returns>TimeSpan.</returns>
+        public TimeSpan NextRetryDelayInterval()
         {
-            get
+            if (null != RetryDelayIntervalProvider)
             {
-                return null != RetryDelayIntervalProvider
-                    ? RetryDelayIntervalProvider()
-                    : _retryDelayInterval;
+                RetryDelayInterval = RetryDelayIntervalProvider();
             }
-            set
-            {
-                _retryDelayInterval = value;
-            }
+
+            return RetryDelayInterval;
         }
 
         /// <summary>

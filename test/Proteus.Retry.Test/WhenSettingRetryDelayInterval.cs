@@ -17,7 +17,7 @@ namespace Proteus.Retry.Test
         public void DefaultIntervalIsZero()
         {
             var policy = new RetryPolicy();
-            Assert.That(policy.RetryDelayInterval, Is.EqualTo(TimeSpan.FromSeconds(0)));
+            Assert.That(policy.NextRetryDelayInterval(), Is.EqualTo(TimeSpan.FromSeconds(0)));
         }
 
         [Test]
@@ -26,7 +26,7 @@ namespace Proteus.Retry.Test
             var policy = new RetryPolicy();
             policy.RetryDelayInterval = TimeSpan.FromHours(1);
 
-            Assert.That(policy.RetryDelayInterval, Is.EqualTo(TimeSpan.FromHours(1)));
+            Assert.That(policy.NextRetryDelayInterval(), Is.EqualTo(TimeSpan.FromHours(1)));
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace Proteus.Retry.Test
             var policy = new RetryPolicy();
             policy.RetryDelayIntervalProvider = () => TimeSpan.FromSeconds(1);
 
-            Assert.That(policy.RetryDelayInterval, Is.EqualTo(TimeSpan.FromSeconds(1)));
+            Assert.That(policy.NextRetryDelayInterval(), Is.EqualTo(TimeSpan.FromSeconds(1)));
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace Proteus.Retry.Test
 
             policy.RetryDelayIntervalProvider = () => TimeSpan.FromSeconds(1);
 
-            Assert.That(policy.RetryDelayInterval, Is.EqualTo(TimeSpan.FromSeconds(1)));
+            Assert.That(policy.NextRetryDelayInterval(), Is.EqualTo(TimeSpan.FromSeconds(1)));
         }
 
         [Test]

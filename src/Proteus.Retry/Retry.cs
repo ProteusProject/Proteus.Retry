@@ -62,7 +62,7 @@ namespace Proteus.Retry
             Logger.DebugFormat("RetryId: {0} - Begin invoking Func {1} using {2}", _currentRetryId, func, Policy);
 
             TReturn returnValue;
-            DoInvoke(func, out returnValue);
+            Invoke(func, out returnValue);
 
             Logger.DebugFormat("RetryId: {0} - Finished invoking Func {1} using {2}", _currentRetryId, func, Policy);
 
@@ -83,13 +83,13 @@ namespace Proteus.Retry
             // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
             // invokes and Action (with no return value)
             object returnValue;
-            DoInvoke(action, out returnValue);
+            Invoke(action, out returnValue);
 
             Logger.DebugFormat("RetryId: {0} - Finished invoking Action using {1}", _currentRetryId, Policy);
 
         }
 
-        private void DoInvoke<TReturn>(Delegate @delegate, out TReturn returnValue)
+        private void Invoke<TReturn>(Delegate @delegate, out TReturn returnValue)
         {
             var retryCount = 0;
 
@@ -188,9 +188,16 @@ namespace Proteus.Retry
 
                     retryCount++;
 
+                    var retryDelayIntervalBeforePausing = Policy.RetryDelayInterval;
+
+                    Logger.DebugFormat("RetryId: {0} - Pausing before next retry attempt for Delay Interval of {1}.", _currentRetryId, retryDelayIntervalBeforePausing);
+
                     //PCL doesn't offer Thread.Sleep so this hack will provide equivalent pause of the current thread for us ...
                     var sleepHack = new ManualResetEvent(false);
-                    sleepHack.WaitOne(Policy.RetryDelayInterval);
+                    sleepHack.WaitOne(Policy.NextRetryDelayInterval());
+
+                    Logger.DebugFormat("RetryId: {0} - Delay Interval of {1} expired; resuming retry attempts.", _currentRetryId, retryDelayIntervalBeforePausing);
+
 
                     //check the timer to see if expired, and throw appropriate exception if so...
                     if (timerState.DurationExceeded)

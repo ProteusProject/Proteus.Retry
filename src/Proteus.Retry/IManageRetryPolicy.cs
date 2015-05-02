@@ -44,6 +44,11 @@ namespace Proteus.Retry
         /// <value>The retry delay interval provider.</value>
         Func<TimeSpan> RetryDelayIntervalProvider { get; set; }
         /// <summary>
+        /// Gets the next retry delay interval.
+        /// </summary>
+        /// <returns>TimeSpan.</returns>
+        TimeSpan NextRetryDelayInterval();
+        /// <summary>
         /// Registers the retriable exception.
         /// </summary>
         /// <typeparam name="TException">The type of the Exception.</typeparam>
