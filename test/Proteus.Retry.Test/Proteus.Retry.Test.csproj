@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="WhenCallingToString.cs" />
     <Compile Include="WhenExecutingHappyPathWithRetry.cs" />
+    <Compile Include="WhenFormattingMethodCallForLogging.cs" />
     <Compile Include="WhenInvokingAsyncDelegates.cs" />
     <Compile Include="ExpectableTestExecption.cs" />
     <Compile Include="GeneralUsageSample.cs" />

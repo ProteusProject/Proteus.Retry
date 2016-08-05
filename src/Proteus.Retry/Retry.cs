@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -55,16 +56,23 @@ namespace Proteus.Retry
         /// <typeparam name="TReturn">The type of the return value from the function.</typeparam>
         /// <param name="func">The function to invoke.</param>
         /// <returns>TReturn.</returns>
-        public TReturn Invoke<TReturn>(Func<TReturn> func)
+        public TReturn Invoke<TReturn>(Expression<Func<TReturn>> func)
         {
             _currentRetryId = Guid.NewGuid();
 
-            Logger.DebugFormat("RetryId: {0} - Begin invoking Func {1} using {2}", _currentRetryId, func, Policy);
+            var funcName = string.Empty;
+
+            if (Logger.IsDebugEnabled)
+            {
+                funcName = MethodCallNameFormatter.GetFormattedName(func);
+            }
+
+            Logger.DebugFormat("RetryId: {0} - Begin invoking Func {1} using {2}", _currentRetryId, funcName, Policy);
 
             TReturn returnValue;
-            Invoke(func, out returnValue);
+            Invoke(func.Compile(), out returnValue);
 
-            Logger.DebugFormat("RetryId: {0} - Finished invoking Func {1} using {2}", _currentRetryId, func, Policy);
+            Logger.DebugFormat("RetryId: {0} - Finished invoking Func {1} using {2}", _currentRetryId, funcName, Policy);
 
             return returnValue;
         }
@@ -73,19 +81,26 @@ namespace Proteus.Retry
         /// Invokes the specified action, respecting the current retry policy.
         /// </summary>
         /// <param name="action">The action to invoke.</param>
-        public void Invoke(Action action)
+        public void Invoke(Expression<Action> action)
         {
             _currentRetryId = Guid.NewGuid();
 
-            Logger.DebugFormat("RetryId: {0} - Begin invoking Action using {1}", _currentRetryId, Policy);
+            var actionName = string.Empty;
+
+            if (Logger.IsDebugEnabled)
+            {
+                actionName = MethodCallNameFormatter.GetFormattedName(action);
+            }
+
+            Logger.DebugFormat("RetryId: {0} - Begin invoking Action {1} using {2}", _currentRetryId, actionName, Policy);
 
             //necessary evil to keep the compiler happy
             // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
             // invokes and Action (with no return value)
             object returnValue;
-            Invoke(action, out returnValue);
+            Invoke(action.Compile(), out returnValue);
 
-            Logger.DebugFormat("RetryId: {0} - Finished invoking Action using {1}", _currentRetryId, Policy);
+            Logger.DebugFormat("RetryId: {0} - Finished invoking Action {1} using {2}", _currentRetryId, actionName, Policy);
 
         }
 

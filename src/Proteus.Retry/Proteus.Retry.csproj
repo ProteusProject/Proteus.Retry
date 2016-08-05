@@ -50,6 +50,7 @@
     <Compile Include="Exceptions\RetryInvocationFailureException.cs" />
     <Compile Include="IManageRetryPolicy.cs" />
     <Compile Include="InternalNoOpLogger.cs" />
+    <Compile Include="MethodCallNameFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Retry.cs" />
     <Compile Include="RetryPolicy.cs" />
