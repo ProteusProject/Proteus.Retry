@@ -49,7 +49,7 @@ The true power of `Proteus.Retry` comes into play when making use of the options
 
 * Total number of retries
 * Duration to wait between successive retries
-* Max Timeout for a single retry before its considered to have failed
+* Max combined duration to wait for all retry attempts to complete
 * List of `Exception` types that are to be considered 'retriable' for each invocation
 * And More!
 
@@ -62,7 +62,7 @@ var myObject = new MyObject();
 //create an instance of a RetryPolicy object and set some of its properties
 var policy = new RetryPolicy();
 policy.MaxRetries = 10;
-policy.MaxRetryDuration = TimeSpan.FromSeconds(10);
+policy.MaxRetryDuration = TimeSpan.FromSeconds(30);
 policy.RetryDelayInterval = TimeSpan.FromSeconds(2);
 policy.RegisterRetriableException<System.IOException>();
 
@@ -80,6 +80,10 @@ try
 catch (MaxRetryCountExceededException)
 {
     Console.WriteLine("Did not successfully invoke method after 10 retry attempts!");
+}
+catch (MaxRetryDurationExpiredException)
+{
+    Console.WriteLine("Did not successfully invoke method after 30 seconds!");
 }
 catch (IOException)
 {
@@ -99,7 +103,7 @@ catch (Exception)
 ```
 Some points about the above sample:
 
-1. Note the use of the `RetryPolicy` object to achieve fine-grained control over the parameters used to retry each call to the `.IncrementMe(...)` method.  In this example, the `RetryPolicy` object is stating the following policy: _"Retry up to 10 times, pausing 2 seconds between each successive retry attempt.  If any single retry attempt takes longer than 10 seconds to complete, consider it as a failure that needs to be retried again.  If you receive an IOException during a retry, consider that to be an 'expected' exception that should be retried, but if you receieve any other exception abort the retry process immediately and rethrow that execption back to the calling code."_
-2. Note that the invocation of the method by `Proteus.Retry` has been wrapped in a `try...catch` block in the calling code.  The use of the multiple `catch(...)` blocks permits the calling code to handle the failure case where `Proteus.Retry` is unable to successfully invoke the method within its maximum configured number of retries.  The type of Exception returned indicates whether the eventual failure was the result of exceeding the number of permitted attempts or an unexpected Exception that the RetryPolicy was not configured to consider 'retriable'.
+1. Note the use of the `RetryPolicy` object to achieve fine-grained control over the parameters used to retry each call to the `.IncrementMe(...)` method.  In this example, the `RetryPolicy` object is stating the following policy: _"Retry up to 10 times, pausing 2 seconds between each successive retry attempt using no more than 30 seconds to process all retries.  If you receive an IOException during a retry, consider that to be an 'expected' exception that should be retried, but if you receieve any other exception abort the retry process immediately and rethrow that execption back to the calling code."_
+2. Note that the invocation of the method by `Proteus.Retry` has been wrapped in a `try...catch` block in the calling code.  The use of the multiple `catch(...)` blocks permits the calling code to handle the failure case where `Proteus.Retry` is unable to successfully invoke the method within its maximum configured number of retries or its maximum configured time limit.  The type of `Exception` returned indicates whether the eventual failure was the result of exceeding the number of permitted attempts, exceding the permitted time limit, or an unexpected Exception that the `RetryPolicy` was not configured to consider 'retriable'.
 
 ### See the full docs on the [Wiki](https://github.com/ProteusProject/Proteus.Retry/wiki) (coming soon!) for more detailed information on these and other features of Proteus.Retry. ###
