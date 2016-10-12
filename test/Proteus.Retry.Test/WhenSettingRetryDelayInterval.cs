@@ -59,18 +59,12 @@ namespace Proteus.Retry.Test
             policy.RetryDelayIntervalProvider = () => intervalProvider.DoublePriorInterval();
             Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(10)), "initial interval not set to expected TimeSpan");
 
+            policy.MaxRetries = 5;
+            policy.RegisterRetriableException<ExpectableTestException>();
+
             var instance = new RetryDelayIntervalTestSpy();
 
-            var retry = new Retry
-            {
-                Policy =
-                {
-                    MaxRetries = 5,
-                    RetryDelayIntervalProvider = intervalProvider.DoublePriorInterval
-                },
-                Logger = LogManager.GetLogger(this.GetType())
-            };
-            retry.Policy.RegisterRetriableException<ExpectableTestException>();
+            var retry = new Retry(policy);
 
             Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => instance.MethodThatAlwaysThrows()),
                 "Did not get to end of retries count!");
