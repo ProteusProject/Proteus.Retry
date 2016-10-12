@@ -1,5 +1,8 @@
 # Proteus.Retry
 
+## Project Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/qxyuw19oxya59e23/branch/master?svg=true)](https://ci.appveyor.com/project/sbohlen/proteus-retry/branch/master)
+
 ## Overview ##
 `Proteus.Retry` is a .NET utility library that provides support for easily invoking methods such that they can be automatically retried on failure.  Retry behavior (including number of retries, interval between successive retries, and so on) are controlled through the definition of Retry Policies that can be applied to each invocation of your method.
 
