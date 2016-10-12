@@ -239,7 +239,7 @@ namespace Proteus.Retry
 
                 } while (retryCount <= Policy.MaxRetries);
 
-                Logger.DebugFormat("RetryId: {0} - MaxRetries of {1} reached without completing invocation; throwing MaxRetryCountExcededException", _currentRetryId, Policy.MaxRetries);
+                Logger.DebugFormat("RetryId: {0} - MaxRetries of {1} reached without completing invocation; throwing MaxRetryCountExceededException", _currentRetryId, Policy.MaxRetries);
 
                 var maxRetryCountReachedException =
                     new MaxRetryCountExceededException(
@@ -293,6 +293,11 @@ namespace Proteus.Retry
             return String.Format("{0} using {1}", base.ToString(), Policy);
         }
 
+        /// <summary>
+        /// Creates a new Retry instance using the specified policy.
+        /// </summary>
+        /// <param name="policy">The policy.</param>
+        /// <returns>Retry.</returns>
         public static Retry Using(RetryPolicy policy)
         {
             return new Retry(policy);
