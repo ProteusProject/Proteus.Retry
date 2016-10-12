@@ -6,6 +6,9 @@
 ## Overview ##
 `Proteus.Retry` is a .NET utility library that provides support for easily invoking methods such that they can be automatically retried on failure.  Retry behavior (including number of retries, interval between successive retries, and so on) are controlled through the definition of Retry Policies that can be applied to each invocation of your method.
 
+## License ##
+`Proteus.Retry` is licensed under [the Apache Software Foundation 2.0 License](https://www.apache.org/licenses/LICENSE-2.0).
+
 ## Using Proteus.Retry: A Simple Example ##
 At its simplest, using Proteus.Retry involves the following steps:
 
