@@ -32,7 +32,7 @@ namespace Proteus.Retry.Test
             const int MAX_RETRIES = 20;
 
             var policy = new RetryPolicy();
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
@@ -60,7 +60,7 @@ namespace Proteus.Retry.Test
             const int MAX_RETRIES = 20;
 
             var policy = new RetryPolicy();
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
@@ -75,7 +75,7 @@ namespace Proteus.Retry.Test
             }
             catch (MaxRetryCountExceededException exception)
             {
-                Assert.That(exception.InnerExceptionHistory.Any(ex => ex.GetType() == typeof(ExpectableTestExecption)));
+                Assert.That(exception.InnerExceptionHistory.Any(ex => ex.GetType() == typeof(ExpectableTestException)));
             }
         }
         
@@ -86,7 +86,7 @@ namespace Proteus.Retry.Test
             const int MAX_RETRIES = 20;
 
             var policy = new RetryPolicy();
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
@@ -101,7 +101,7 @@ namespace Proteus.Retry.Test
             }
             catch (MaxRetryCountExceededException exception)
             {
-                Assert.That(exception.InnerExceptionHistory.Any(ex => ex.GetType() == typeof(ExpectableTestExecption)));
+                Assert.That(exception.InnerExceptionHistory.Any(ex => ex.GetType() == typeof(ExpectableTestException)));
             }
         }
 
@@ -110,7 +110,7 @@ namespace Proteus.Retry.Test
         public async Task CanReportMaxRetryDurationExceededIfNoSuccess()
         {
             var policy = new RetryPolicy { MaxRetries = 10, MaxRetryDuration = TimeSpan.FromSeconds(5) };
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
             var instance = new TestSpy();
 
@@ -149,7 +149,7 @@ namespace Proteus.Retry.Test
             private int DoWork()
             {
                 Thread.Sleep(1000);
-                throw new ExpectableTestExecption();
+                throw new ExpectableTestException();
             }
 
             public Task<string> AwaitableMethodThatDoesntThrow(string message)
@@ -164,7 +164,7 @@ namespace Proteus.Retry.Test
                     if (InvocationsOfAwaitableMethodThatThrowsUntil < throwInvocationCount)
                     {
                         InvocationsOfAwaitableMethodThatThrowsUntil++;
-                        throw new ExpectableTestExecption();
+                        throw new ExpectableTestException();
                     }
                 });
             }
@@ -172,14 +172,14 @@ namespace Proteus.Retry.Test
             public Task AwaitableMethodThatAlwaysThrowsImmediately()
             {
                 InvocationsOfAwaitableMethodThatAlwaysThrowsImmediately++;
-                throw new ExpectableTestExecption();
+                throw new ExpectableTestException();
             }
 
             public Task AwaitableMethodThatAlwaysThrowsAfterSleepingFor(int milliseconds)
             {
                 InvocationsOfAwaitableMethodThatAlwaysThrowsAfterSleeping++;
                 Thread.Sleep(milliseconds);
-                throw new ExpectableTestExecption();
+                throw new ExpectableTestException();
             }
 
             public int InvocationsOfAwaitableMethodThatAlwaysThrowsAfterSleeping { get; private set; }
@@ -189,7 +189,7 @@ namespace Proteus.Retry.Test
             public async Task AwaitableMethodThatAlwaysThrowsAndCallsNestedAwaitableMethodThatAlwaysThrows()
             {
                 await AwaitableMethodThatAlwaysThrowsImmediately();
-                throw new ExpectableTestExecption();
+                throw new ExpectableTestException();
             }
         }
     }

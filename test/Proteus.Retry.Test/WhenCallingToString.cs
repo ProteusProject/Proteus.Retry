@@ -8,7 +8,7 @@ namespace Proteus.Retry.Test
     public class WhenCallingToString
     {
         [Test]
-        public void RetryPolicvyCanReportDetailsOfSettings()
+        public void RetryPolicyCanReportDetailsOfSettings()
         {
             var policy = new RetryPolicy();
 

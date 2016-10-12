@@ -10,16 +10,16 @@ namespace Proteus.Retry.Test
         [Test]
         public void CanAddTypesDerivedFromConstrainedType()
         {
-            Assume.That(typeof(ExpectableTestExecption).IsSubclassOf(typeof(Exception)), "Unable to validate required inheritance hierarchy.");
+            Assume.That(typeof(ExpectableTestException).IsSubclassOf(typeof(Exception)), "Unable to validate required inheritance hierarchy.");
 
             var list = new ConstrainedTypesList<Exception>();
             list.Add(typeof(Exception));
-            list.Add(typeof(ExpectableTestExecption));
-            list.Insert(0, (typeof(ExpectableTestExecption)));
-            list[0] = (typeof(ExpectableTestExecption));
+            list.Add(typeof(ExpectableTestException));
+            list.Insert(0, (typeof(ExpectableTestException)));
+            list[0] = (typeof(ExpectableTestException));
 
             Assert.That(list, Has.Member(typeof(Exception)), "Cannot successfully add Exception type.");
-            Assert.That(list, Has.Member(typeof(ExpectableTestExecption)), "Cannot successfully add Exception-derived type.");
+            Assert.That(list, Has.Member(typeof(ExpectableTestException)), "Cannot successfully add Exception-derived type.");
         }
 
         [Test]

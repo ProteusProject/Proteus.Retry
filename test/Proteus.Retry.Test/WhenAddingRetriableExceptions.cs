@@ -32,7 +32,7 @@ namespace Proteus.Retry.Test
             retry.Logger = LogManager.GetLogger(this.GetType());
             var instance = new RetriableExceptionsTestSpy();
 
-            Assert.Throws<ExpectableTestExecption>(() => retry.Invoke(() => instance.ThrowException<ExpectableTestExecption>()));
+            Assert.Throws<ExpectableTestException>(() => retry.Invoke(() => instance.ThrowException<ExpectableTestException>()));
 
         }
 
@@ -41,9 +41,9 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
-            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetriableException<ExpectableTestException>(), Is.True);
         }
 
 
@@ -52,11 +52,11 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            var exceptions = new List<Type> { typeof(ArithmeticException), typeof(ExpectableTestExecption) };
+            var exceptions = new List<Type> { typeof(ArithmeticException), typeof(ExpectableTestException) };
 
             policy.RegisterRetriableExceptions(exceptions);
 
-            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetriableException<ExpectableTestException>(), Is.True);
             Assert.That(policy.IsRetriableException<ArithmeticException>(), Is.True);
         }
 
@@ -64,7 +64,7 @@ namespace Proteus.Retry.Test
         public void CanPreventAddingMultipleExceptionsContainingTypesNotDerivedFromException()
         {
             var policy = new RetryPolicy();
-            var exceptions = new List<Type> { typeof(ArithmeticException), typeof(ExpectableTestExecption), typeof(Retry) };
+            var exceptions = new List<Type> { typeof(ArithmeticException), typeof(ExpectableTestException), typeof(Retry) };
 
             Assert.Throws<ArgumentException>(() => policy.RegisterRetriableExceptions(exceptions));
         }
@@ -74,9 +74,9 @@ namespace Proteus.Retry.Test
         {
             var policy = new RetryPolicy();
 
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
-            Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
+            Assert.That(policy.IsRetriableException(new ExpectableTestException()), Is.True);
             Assert.That(policy.IsRetriableException(new Exception()), Is.False);
         }
 
@@ -89,7 +89,7 @@ namespace Proteus.Retry.Test
             policy.RegisterRetriableException<Exception>();
 
             //...check for a derived type
-            Assert.That(policy.IsRetriableException<ExpectableTestExecption>(), Is.True);
+            Assert.That(policy.IsRetriableException<ExpectableTestException>(), Is.True);
         }
 
         [Test]
@@ -101,16 +101,16 @@ namespace Proteus.Retry.Test
             policy.RegisterRetriableException<Exception>();
 
             //...check for instance of derived type
-            Assert.That(policy.IsRetriableException(new ExpectableTestExecption()), Is.True);
+            Assert.That(policy.IsRetriableException(new ExpectableTestException()), Is.True);
         }
 
         [Test]
         public void CanSetDefaultToIgnoreExceptionTypeHierarchy()
         {
-            Assume.That(typeof(DerivedTestException).IsSubclassOf(typeof(ExpectableTestExecption)), "Assumed inheritance relationship not present!");
+            Assume.That(typeof(DerivedTestException).IsSubclassOf(typeof(ExpectableTestException)), "Assumed inheritance relationship not present!");
 
             var policy = new RetryPolicy { MaxRetries = 10, IgnoreInheritanceForRetryExceptions = true };
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
             var retry = new Retry(policy);
             retry.Logger = LogManager.GetLogger(this.GetType());
@@ -120,7 +120,7 @@ namespace Proteus.Retry.Test
             Assert.Throws<DerivedTestException>(() => retry.Invoke(() => instance.ThrowException<DerivedTestException>()));
         }
 
-        private class DerivedTestException : ExpectableTestExecption
+        private class DerivedTestException : ExpectableTestException
         {
 
         }

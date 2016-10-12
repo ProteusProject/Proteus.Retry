@@ -14,11 +14,11 @@ namespace Proteus.Retry.Test
         [Test]
         [Ignore("compiler optimizations get in the way of a meaningful comparison of execution times :(")]
         [MethodImpl(MethodImplOptions.NoOptimization)]
-        public void PeformanceOverheadIsAcceptable()
+        public void PerformanceOverheadIsAcceptable()
         {
             const int ITERATIONS = 10000;
 
-            var instance = new PeformanceTestSpy();
+            var instance = new PerformanceTestSpy();
 
             var nakedInvocationStopwatch = new Stopwatch();
 
@@ -50,9 +50,9 @@ namespace Proteus.Retry.Test
             Debug.WriteLine("Retry Invocation (ms): {0}", retryInvocationStopwatch.ElapsedMilliseconds);
 
             var percentageDifferentialElapsed = PercentageDifferentialElapsed(nakedInvocationStopwatch, retryInvocationStopwatch);
-            Debug.WriteLine("Percentage Differental: {0}", percentageDifferentialElapsed);
+            Debug.WriteLine("Percentage Differential: {0}", percentageDifferentialElapsed);
 
-            Assert.That(percentageDifferentialElapsed, Is.LessThan(0.5), "Peformance differential must be less than 1/2 of 1 percent!");
+            Assert.That(percentageDifferentialElapsed, Is.LessThan(0.5), "Performance differential must be less than 1/2 of 1 percent!");
         }
 
         private double PercentageDifferentialElapsed(Stopwatch expectedLesserDurationStopwatch, Stopwatch expectedGreaterDurationStopwatch)
@@ -65,7 +65,7 @@ namespace Proteus.Retry.Test
         }
 
 
-        private class PeformanceTestSpy
+        private class PerformanceTestSpy
         {
             [MethodImpl(MethodImplOptions.NoOptimization)]
             public void SomeMethodThatSleeps(int value)

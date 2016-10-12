@@ -57,7 +57,7 @@ namespace Proteus.Retry.Test
 
             var policy = new RetryPolicy();
             policy.RetryDelayIntervalProvider = () => intervalProvider.DoublePriorInterval();
-            Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(10)),"initial interval not set to expected TimeSpan");
+            Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(10)), "initial interval not set to expected TimeSpan");
 
             var instance = new RetryDelayIntervalTestSpy();
 
@@ -68,9 +68,9 @@ namespace Proteus.Retry.Test
                     MaxRetries = 5,
                     RetryDelayIntervalProvider = intervalProvider.DoublePriorInterval
                 },
-                Logger= LogManager.GetLogger(this.GetType())
-        };
-            retry.Policy.RegisterRetriableException<ExpectableTestExecption>();
+                Logger = LogManager.GetLogger(this.GetType())
+            };
+            retry.Policy.RegisterRetriableException<ExpectableTestException>();
 
             Assert.Throws<MaxRetryCountExceededException>(() => retry.Invoke(() => instance.MethodThatAlwaysThrows()),
                 "Did not get to end of retries count!");
@@ -153,7 +153,7 @@ namespace Proteus.Retry.Test
 
                 _priorInvocationTicks = currentInvocationTicks;
                 InvocationsOfMethodThatAlwaysThrows++;
-                throw new ExpectableTestExecption();
+                throw new ExpectableTestException();
             }
 
             public int InvocationsOfMethodThatAlwaysThrows { get; private set; }

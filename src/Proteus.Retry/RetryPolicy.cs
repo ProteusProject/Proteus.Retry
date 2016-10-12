@@ -64,7 +64,7 @@ namespace Proteus.Retry
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whetherto [ignore inheritance for retry exceptions].
+        /// Gets or sets a value indicating whether to [ignore inheritance for retry exceptions].
         /// </summary>
         /// <value><c>true</c> if [ignore inheritance for retry exceptions]; otherwise, <c>false</c>.</value>
         public bool IgnoreInheritanceForRetryExceptions { get; set; }

@@ -38,7 +38,7 @@ namespace Proteus.Retry.Test
             var policy = new RetryPolicy();
             policy.MaxRetryDuration = TimeSpan.FromMilliseconds(MAX_RETRY_DURATION);
             policy.MaxRetries = MAX_RETRIES;
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
             var retry = new Retry(policy);
             retry.Logger = LogManager.GetLogger(this.GetType());
@@ -59,7 +59,7 @@ namespace Proteus.Retry.Test
             {
                 SleepMethodInvocations++;
                 Thread.Sleep(sleepMilliseconds);
-                throw new ExpectableTestExecption();
+                throw new ExpectableTestException();
             }
 
             public int SleepMethodInvocations { get; private set; }

@@ -29,7 +29,7 @@ namespace Proteus.Retry
         /// <value><c>true</c> if this instance has maximum retry duration; otherwise, <c>false</c>.</value>
         bool HasMaxRetryDuration { get; }
         /// <summary>
-        /// Gets or sets a value indicating whetherto [ignore inheritance for retry exceptions].
+        /// Gets or sets a value indicating whether to [ignore inheritance for retry exceptions].
         /// </summary>
         /// <value><c>true</c> if [ignore inheritance for retry exceptions]; otherwise, <c>false</c>.</value>
         bool IgnoreInheritanceForRetryExceptions { get; set; }

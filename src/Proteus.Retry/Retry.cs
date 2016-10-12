@@ -157,7 +157,7 @@ namespace Proteus.Retry
                                 //if in faulted state we have to tell the Task infrastructure we're handling ALL the exceptions
                                 returnTask.Exception.Handle(ex => true);
 
-                                //now that we've short-circuted the Task exception system, we can recompose our own and throw it
+                                //now that we've short-circuited the Task exception system, we can recompose our own and throw it
                                 // so we can catch it ourselves below...
                                 throw new AggregateException(returnTask.Exception.InnerException);
                             }

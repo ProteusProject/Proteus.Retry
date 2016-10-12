@@ -25,7 +25,7 @@ namespace Proteus.Retry.Test
             const int MAX_RETRIES = 3;
 
             var policy = new RetryPolicy { MaxRetries = MAX_RETRIES };
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
@@ -40,7 +40,7 @@ namespace Proteus.Retry.Test
         public void ZeroMaxRetriesStillInvokesDelegateOnce()
         {
             var policy = new RetryPolicy { MaxRetries = 0 };
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
@@ -61,7 +61,7 @@ namespace Proteus.Retry.Test
 
 
             var policy = new RetryPolicy { MaxRetries = MAX_RETRIES };
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
@@ -86,7 +86,7 @@ namespace Proteus.Retry.Test
             const int MAX_RETRIES = 20;
 
             var policy = new RetryPolicy { MaxRetries = MAX_RETRIES };
-            policy.RegisterRetriableException<ExpectableTestExecption>();
+            policy.RegisterRetriableException<ExpectableTestException>();
 
             var testObject = new RetryPolicyMaxRetriesTestSpy();
 
@@ -104,7 +104,7 @@ namespace Proteus.Retry.Test
                 //all exceptions in the list should be of the same pre-canned type based on the test spy hard-coded behavior to always throw
                 foreach (var pastException in exception.InnerExceptionHistory)
                 {
-                    Assert.That(pastException, Is.InstanceOf<ExpectableTestExecption>());
+                    Assert.That(pastException, Is.InstanceOf<ExpectableTestException>());
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace Proteus.Retry.Test
             public void DoWorkThatAlwaysThrows()
             {
                 InvocationsOfDoWorkThatAlwaysThrows++;
-                throw new ExpectableTestExecption();
+                throw new ExpectableTestException();
             }
 
             public void DoWorkThatThrowsUntilInvocationCountIs(int throwInvocationCount)
@@ -122,7 +122,7 @@ namespace Proteus.Retry.Test
                 if (InvocationsOfDoWorkThatThrowsUntil < throwInvocationCount)
                 {
                     InvocationsOfDoWorkThatThrowsUntil++;
-                    throw new ExpectableTestExecption();
+                    throw new ExpectableTestException();
                 }
             }
 
