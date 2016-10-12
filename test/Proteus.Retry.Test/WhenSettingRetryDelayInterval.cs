@@ -97,13 +97,6 @@ namespace Proteus.Retry.Test
 
         }
 
-        [Test]
-        public void IntentionallyFailingTests()
-        {
-            Assert.Fail("testing CI build/test results to ensure build fails if not all tests pass.");
-        }
-
-
         private bool AreEqualWithinTolerance(double first, double second, double tolerance)
         {
             return Math.Abs(first - second) <= tolerance;
