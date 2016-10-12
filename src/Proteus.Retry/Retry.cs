@@ -292,5 +292,10 @@ namespace Proteus.Retry
         {
             return String.Format("{0} using {1}", base.ToString(), Policy);
         }
+
+        public static Retry Using(RetryPolicy policy)
+        {
+            return new Retry(policy);
+        }
     }
 }

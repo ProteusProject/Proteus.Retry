@@ -12,11 +12,11 @@ namespace Proteus.Retry.Test
     public class GeneralUsageSample
     {
         [Test]
-        public void GeneralScenario1()
+        public void GeneralScenarioUsingInstanceRetrySyntax()
         {
             var instance = new TestObject();
 
-            var policy = new RetryPolicy() { MaxRetries = 20 };
+            var policy = new RetryPolicy { MaxRetries = 20 };
             policy.RegisterRetriableException<ExpectableTestExecption>();
 
             var retry = new Retry(policy);
@@ -38,6 +38,21 @@ namespace Proteus.Retry.Test
             Assert.That(instance.VoidReturnInvokeCount, Is.EqualTo(2));
 
         }
+
+        [Test]
+        public void GeneralScenarioUsingStaticRetrySyntax()
+        {
+            var policy = new RetryPolicy { MaxRetries = 20 };
+
+            var instance = new TestObject();
+
+            var result = Retry.Using(policy).Invoke(() => instance.IntReturningMethod(1, "func invoked"));
+
+            Assert.That(result, Is.EqualTo(1));
+            Assert.That(instance.IntResult, Is.EqualTo(1));
+            Assert.That(instance.StringResult, Is.EqualTo("func invoked"));
+        }
+
 
         private class TestObject
         {
