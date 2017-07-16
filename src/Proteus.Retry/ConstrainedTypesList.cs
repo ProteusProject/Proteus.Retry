@@ -22,6 +22,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Proteus.Retry
@@ -44,7 +45,7 @@ namespace Proteus.Retry
         /// <exception cref="System.ArgumentException"></exception>
         private void ThrowIfTypeIsNotConstrainedType(Type type)
         {
-            if (type == typeof(TConstraint) || type.IsSubclassOf(typeof(TConstraint)))
+            if (type == typeof(TConstraint) || type.GetTypeInfo().IsSubclassOf(typeof(TConstraint)))
                 return;
 
             throw new ArgumentException(string.Format("This instance of Proteus.Retry.ConstrainedTypesList<Type> can only accept {0} or types derived from {0}.", typeof(TConstraint).FullName));

@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace Proteus.Retry
@@ -182,7 +183,7 @@ namespace Proteus.Retry
             }
             else
             {
-                var typeMatchedToAncestor = _retriableExceptions.Any(registeredException => getTheType().IsSubclassOf(registeredException));
+                var typeMatchedToAncestor = _retriableExceptions.Any(registeredException => getTheType().GetTypeInfo().IsSubclassOf(registeredException));
                 return specificTypeMatched || typeMatchedToAncestor;
             }
         }
