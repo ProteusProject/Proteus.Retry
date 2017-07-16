@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.2</TargetFramework>
+
+    <!--BEGIN nuget packaging specification-->
+    <Authors>Stephen A. Bohlen</Authors>
+    <Description>Enables easy invocation of arbitrary methods controlled by a declarative RETRY behavior</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright 2017 (c) Stephen A. Bohlen. All rights reserved.</Copyright>
+    <PackageTags>retry circuitbreaker utility</PackageTags>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/ProteusProject/Proteus.Retry</RepositoryUrl>
+    <RepositoryType>Public</RepositoryType>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <VersionSuffix>RC1</VersionSuffix>
+    <!--END nuget packaging specification-->
+
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
