@@ -1,4 +1,7 @@
 version: 1.0.{build}
+image: Visual Studio 2017
+configuration: Debug
+platform: Any CPU
 build:
   project: Proteus.Retry.build.xml
-  verbosity: minimal
+  verbosity: detailed
