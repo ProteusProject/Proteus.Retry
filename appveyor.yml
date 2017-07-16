@@ -1,7 +1,7 @@
 version: 1.0.{build}
-init:
-    - cmd: dotnet restore Proteus.Retry.sln
 image: Visual Studio 2017
+before_build:
+- cmd: dotnet restore
 build:
   project: Proteus.Retry.build.xml
   verbosity: detailed
