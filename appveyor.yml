@@ -4,4 +4,4 @@ before_build:
 - cmd: dotnet restore
 build:
   project: Proteus.Retry.build.xml
-  verbosity: detailed
+  verbosity: minimal
