@@ -5,7 +5,7 @@
 
     <!--BEGIN nuget packaging specification-->
     <Authors>Stephen A. Bohlen</Authors>
-    <Description>Enables easy invocation of arbitrary methods controlled by a declarative RETRY behavior</Description>
+    <Description>Apply declarative RETRY behavior to any arbitrary method invocation.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright © 2017 Stephen A. Bohlen. All rights reserved.</Copyright>
     <PackageTags>retry circuitbreaker utility</PackageTags>
