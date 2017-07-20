@@ -70,6 +70,7 @@
     <Compile Include="GeneralUsageSample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WhenManipulatingConstrainedTypesList.cs" />
+    <Compile Include="WhenSettingDefaultLogger.cs" />
     <Compile Include="WhenSettingMaxRetries.cs" />
     <Compile Include="WhenAddingRetriableExceptions.cs" />
     <Compile Include="WhenSettingMaxRetryDuration.cs" />

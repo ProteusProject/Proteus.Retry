@@ -47,6 +47,13 @@ namespace Proteus.Retry
         /// <value>The logger.</value>
         public Action<string> Logger { private get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the default logger.
+        /// </summary>
+        /// <value>The default logger.</value>
+        public static Action<string> DefaultLogger { private get; set; } = msg => { };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Retry"/> class.
         /// </summary>
@@ -62,7 +69,7 @@ namespace Proteus.Retry
         public Retry(IManageRetryPolicy policy)
         {
             Policy = policy;
-            Logger = msg => { };
+            Logger = DefaultLogger;
         }
 
 
