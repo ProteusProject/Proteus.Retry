@@ -41,7 +41,7 @@ namespace Proteus.Retry.Test
 
             var retry = new Retry(policy);
 
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
 
             var result = retry.Invoke(() => instance.IntReturningMethod(1, "func invoked"));
 

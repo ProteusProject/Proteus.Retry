@@ -49,7 +49,7 @@ namespace Proteus.Retry.Test
 
 
             var retry = new Retry(policy);
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
             var instance = new RetriableExceptionsTestSpy();
 
             Assert.Throws<ExpectableTestException>(() => retry.Invoke(() => instance.ThrowException<ExpectableTestException>()));
@@ -133,7 +133,7 @@ namespace Proteus.Retry.Test
             policy.RegisterRetriableException<ExpectableTestException>();
 
             var retry = new Retry(policy);
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
             var instance = new RetriableExceptionsTestSpy();
 
             //since only the base type ExpectableTestException is registered as retriable, we should get the un-retried derived type exception here...

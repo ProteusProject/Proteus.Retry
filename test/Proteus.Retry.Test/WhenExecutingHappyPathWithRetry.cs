@@ -52,7 +52,7 @@ namespace Proteus.Retry.Test
             nakedInvocationStopwatch.Stop();
 
             var retry = new Retry();
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
 
             var retryInvocationStopwatch = new Stopwatch();
 
@@ -80,7 +80,7 @@ namespace Proteus.Retry.Test
             var greater = expectedGreaterDurationStopwatch.ElapsedMilliseconds;
             var lesser = expectedLesserDurationStopwatch.ElapsedMilliseconds;
 
-            Assert.That(lesser, Is.LessThanOrEqualTo(greater),string.Format("Unable to continue: Naked stopwatch ({0} ms) not lesser than Retry stopwatch ({1} ms).", lesser, greater));
+            Assert.That(lesser, Is.LessThanOrEqualTo(greater), string.Format("Unable to continue: Naked stopwatch ({0} ms) not lesser than Retry stopwatch ({1} ms).", lesser, greater));
             return (double)(greater - lesser) / lesser * 100;
         }
 

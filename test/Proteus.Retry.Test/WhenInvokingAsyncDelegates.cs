@@ -36,7 +36,7 @@ namespace Proteus.Retry.Test
         public async Task CanAwaitSuccessfulInvocation()
         {
             var retry = new Retry();
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
 
             var instance = new TestSpy();
 
@@ -56,7 +56,7 @@ namespace Proteus.Retry.Test
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
 
             var instance = new TestSpy();
 
@@ -84,7 +84,7 @@ namespace Proteus.Retry.Test
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
 
             var instance = new TestSpy();
 
@@ -98,7 +98,7 @@ namespace Proteus.Retry.Test
                 Assert.That(exception.InnerExceptionHistory.Any(ex => ex.GetType() == typeof(ExpectableTestException)));
             }
         }
-        
+
         [Test]
         public async Task CanPopulateInnerExceptionHistoryWithInnerExceptionsWhenNestedAggregateExceptions()
         {
@@ -110,7 +110,7 @@ namespace Proteus.Retry.Test
             policy.MaxRetries = MAX_RETRIES;
 
             var retry = new Retry(policy);
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
 
             var instance = new TestSpy();
 
@@ -135,7 +135,7 @@ namespace Proteus.Retry.Test
             var instance = new TestSpy();
 
             var retry = new Retry(policy);
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
 
             try
             {

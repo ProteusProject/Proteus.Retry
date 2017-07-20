@@ -61,7 +61,7 @@ namespace Proteus.Retry.Test
             policy.RegisterRetriableException<ExpectableTestException>();
 
             var retry = new Retry(policy);
-            retry.Logger = LogManager.GetLogger(this.GetType());
+            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
             
             var instance = new MaxRetryDurationTestSpy();
 
