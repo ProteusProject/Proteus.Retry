@@ -49,7 +49,7 @@ namespace Proteus.Retry
         /// Sets the logger.
         /// </summary>
         /// <value>The logger.</value>
-        public ILog Logger { private get; set; }
+        public Action<string> Logger { private get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Retry"/> class.
@@ -66,7 +66,7 @@ namespace Proteus.Retry
         public Retry(IManageRetryPolicy policy)
         {
             Policy = policy;
-            Logger = new InternalNoOpLogger();
+            Logger = msg => { };
         }
 
 
@@ -80,19 +80,14 @@ namespace Proteus.Retry
         {
             _currentRetryId = Guid.NewGuid();
 
-            var funcName = string.Empty;
+            var funcName = MethodCallNameFormatter.GetFormattedName(func);
 
-            if (Logger.IsDebugEnabled)
-            {
-                funcName = MethodCallNameFormatter.GetFormattedName(func);
-            }
-
-            Logger.DebugFormat("RetryId: {0} - Begin invoking Func {1} using {2}", _currentRetryId, funcName, Policy);
+            Logger($"RetryId: {_currentRetryId} - Begin invoking Func {funcName} using {Policy}");
 
             TReturn returnValue;
             Invoke(func.Compile(), out returnValue);
 
-            Logger.DebugFormat("RetryId: {0} - Finished invoking Func {1} using {2}", _currentRetryId, funcName, Policy);
+            Logger($"RetryId: {_currentRetryId} - Finished invoking Func {funcName} using {Policy}");
 
             return returnValue;
         }
@@ -105,14 +100,9 @@ namespace Proteus.Retry
         {
             _currentRetryId = Guid.NewGuid();
 
-            var actionName = string.Empty;
+            var actionName = MethodCallNameFormatter.GetFormattedName(action);
 
-            if (Logger.IsDebugEnabled)
-            {
-                actionName = MethodCallNameFormatter.GetFormattedName(action);
-            }
-
-            Logger.DebugFormat("RetryId: {0} - Begin invoking Action {1} using {2}", _currentRetryId, actionName, Policy);
+            Logger($"RetryId: {_currentRetryId} - Begin invoking Action {actionName} using {Policy}");
 
             //necessary evil to keep the compiler happy
             // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
@@ -120,7 +110,7 @@ namespace Proteus.Retry
             object returnValue;
             Invoke(action.Compile(), out returnValue);
 
-            Logger.DebugFormat("RetryId: {0} - Finished invoking Action {1} using {2}", _currentRetryId, actionName, Policy);
+            Logger($"RetryId: {_currentRetryId} - Finished invoking Action {actionName} using {Policy}");
 
         }
 
@@ -137,7 +127,7 @@ namespace Proteus.Retry
                 //if the timer-dependent value has been specified, create the timer (starts automatically)...
                 if (Policy.HasMaxRetryDuration)
                 {
-                    Logger.DebugFormat("RetryId: {0} - MaxRetryDuration setting detected ({1}), starting timer to track retry duration expiry.", _currentRetryId, Policy.MaxRetryDuration);
+                    Logger($"RetryId: {_currentRetryId} - MaxRetryDuration setting detected ({Policy.MaxRetryDuration}), starting timer to track retry duration expiry.");
 
                     timer = new Timer(MaxRetryDurationExpiredCallback, timerState, Policy.MaxRetryDuration, TimeSpan.FromSeconds(0));
                 }
@@ -154,12 +144,12 @@ namespace Proteus.Retry
 
                         if (func != null)
                         {
-                            Logger.DebugFormat("RetryId: {0} - Func Invocation Attempt #{1}", _currentRetryId, retryCount + 1);
+                            Logger($"RetryId: {_currentRetryId} - Func Invocation Attempt #{retryCount + 1}");
                             returnValue = func.Invoke();
                         }
                         else
                         {
-                            Logger.DebugFormat("RetryId: {0} - Action Invocation Attempt #{1}", _currentRetryId, retryCount + 1);
+                            Logger($"RetryId: {_currentRetryId} - Action Invocation Attempt #{retryCount + 1}");
 
                             ((Action)@delegate).Invoke();
                         }
@@ -168,11 +158,11 @@ namespace Proteus.Retry
 
                         if (returnTask != null)
                         {
-                            Logger.DebugFormat("RetryId: {0} - Invocation returned a Task.", _currentRetryId);
+                            Logger($"RetryId: {_currentRetryId} - Invocation returned a Task.");
 
                             if (returnTask.Status == TaskStatus.Faulted)
                             {
-                                Logger.DebugFormat("RetryId: {0} - Task determined to be in FAULTED state.", _currentRetryId);
+                                Logger($"RetryId: {_currentRetryId} - Task determined to be in FAULTED state.");
 
                                 //if in faulted state we have to tell the Task infrastructure we're handling ALL the exceptions
                                 returnTask.Exception.Handle(ex => true);
@@ -228,29 +218,26 @@ namespace Proteus.Retry
                     {
                         var retryDelayIntervalBeforeWaiting = Policy.RetryDelayInterval;
 
-                        Logger.DebugFormat(
-                            "RetryId: {0} - Pausing before next retry attempt for Delay Interval of {1}.",
-                            _currentRetryId, retryDelayIntervalBeforeWaiting);
+                        Logger($"RetryId: {_currentRetryId} - Pausing before next retry attempt for Delay Interval of {retryDelayIntervalBeforeWaiting}.");
 
                         //PCL doesn't offer Thread.Sleep so this hack will provide equivalent pause of the current thread for us ...
                         var sleepHack = new ManualResetEvent(false);
                         sleepHack.WaitOne(Policy.NextRetryDelayInterval());
 
-                        Logger.DebugFormat("RetryId: {0} - Delay Interval of {1} expired; resuming retry attempts.",
-                            _currentRetryId, retryDelayIntervalBeforeWaiting);
+                        Logger($"RetryId: {_currentRetryId} - Delay Interval of {retryDelayIntervalBeforeWaiting} expired; resuming retry attempts.");
                     }
                     else
                     {
-                        Logger.DebugFormat("RetryId: {0} - No RetryDelayInterval configured; skipping delay and retrying immediately.", _currentRetryId);
+                        Logger($"RetryId: {_currentRetryId} - No RetryDelayInterval configured; skipping delay and retrying immediately.");
                     }
 
 
                     //check the timer to see if expired, and throw appropriate exception if so...
                     if (timerState.DurationExceeded)
                     {
-                        Logger.DebugFormat("RetryId: {0} - MaxRetryDuration of {1} expired without completing invocation; throwing MaxRetryDurationExpiredException", _currentRetryId, Policy.MaxRetryDuration);
+                        Logger($"RetryId: {_currentRetryId} - MaxRetryDuration of {Policy.MaxRetryDuration} expired without completing invocation; throwing MaxRetryDurationExpiredException");
 
-                        throw new MaxRetryDurationExpiredException(string.Format("The specified duration of {0} has expired and the invocation has been aborted.  {1} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.", Policy.MaxRetryDuration, retryCount))
+                        throw new MaxRetryDurationExpiredException($"The specified duration of {Policy.MaxRetryDuration} has expired and the invocation has been aborted.  {retryCount} attempt(s) were made prior to aborting the effort.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.")
                         {
                             InnerExceptionHistory = _innerExceptionHistory
                         };
@@ -259,13 +246,10 @@ namespace Proteus.Retry
 
                 } while (retryCount <= Policy.MaxRetries);
 
-                Logger.DebugFormat("RetryId: {0} - MaxRetries of {1} reached without completing invocation; throwing MaxRetryCountExceededException", _currentRetryId, Policy.MaxRetries);
+                Logger($"RetryId: {_currentRetryId} - MaxRetries of {Policy.MaxRetries} reached without completing invocation; throwing MaxRetryCountExceededException");
 
                 var maxRetryCountReachedException =
-                    new MaxRetryCountExceededException(
-                        string.Format(
-                            "Unable to successfully invoke method within {0} attempts.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.",
-                            retryCount))
+                    new MaxRetryCountExceededException($"Unable to successfully invoke method within {retryCount} attempts.  Examine InnerExceptionHistory property for details re: each unsuccessful attempt.")
                     {
                         InnerExceptionHistory = _innerExceptionHistory
                     };
@@ -274,20 +258,19 @@ namespace Proteus.Retry
             }
             finally
             {
-                if (timer != null)
-                    timer.Dispose();
+                timer?.Dispose();
             }
         }
 
         private void LogNonRetriableExceptionDetected(Exception exception)
         {
-            Logger.DebugFormat("RetryId: {0} - Exception of type {1} is not registered as retriable; rethrowing exception.", _currentRetryId, exception.GetType());
+            Logger($"RetryId: {_currentRetryId} - Exception of type {exception.GetType()} is not registered as retriable; rethrowing exception.");
 
         }
 
         private void LogRetriableExceptionDetected(Exception exception)
         {
-            Logger.DebugFormat("RetryId: {0} - Exception of type {1} is registered as retriable, will retry.", _currentRetryId, exception.GetType());
+            Logger($"RetryId: {_currentRetryId} - Exception of type {exception.GetType()} is registered as retriable, will retry.");
         }
 
         private void MaxRetryDurationExpiredCallback(object state)
@@ -305,12 +288,12 @@ namespace Proteus.Retry
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return String.Format("{0} using {1}", base.ToString(), Policy);
+            return $"{base.ToString()} using {Policy}";
         }
 
         /// <summary>
