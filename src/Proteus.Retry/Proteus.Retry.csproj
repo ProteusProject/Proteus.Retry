@@ -26,8 +26,4 @@
     <OutputPath>..\..\build\Release\</OutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Common.Logging.Core" Version="3.4.0-RC1" />
-  </ItemGroup>
-
 </Project>
