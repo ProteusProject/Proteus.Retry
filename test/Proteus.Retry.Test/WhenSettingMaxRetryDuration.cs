@@ -19,7 +19,6 @@
 #endregion
 
 using System;
-using System.Configuration;
 using System.Threading;
 using Common.Logging;
 using NUnit.Framework;

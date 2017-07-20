@@ -19,7 +19,6 @@
 #endregion
 
 using System;
-using System.Linq;
 using NUnit.Framework;
 
 namespace Proteus.Retry.Test

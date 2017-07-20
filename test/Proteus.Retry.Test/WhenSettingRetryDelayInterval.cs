@@ -20,11 +20,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Remoting.Metadata;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using Common.Logging;
 using NUnit.Framework;
 using Proteus.Retry.Exceptions;
 

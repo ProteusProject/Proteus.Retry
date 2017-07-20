@@ -19,8 +19,6 @@
 #endregion
 
 using System.Diagnostics;
-using System.IO;
-using System.Management.Instrumentation;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Common.Logging;

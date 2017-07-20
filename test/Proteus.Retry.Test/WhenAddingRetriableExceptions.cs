@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using Common.Logging;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace Proteus.Retry.Test
 {
