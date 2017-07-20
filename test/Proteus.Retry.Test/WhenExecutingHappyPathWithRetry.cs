@@ -49,8 +49,7 @@ namespace Proteus.Retry.Test
 
             nakedInvocationStopwatch.Stop();
 
-            var retry = new Retry();
-            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
+            var retry = new Retry { Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg) };
 
             var retryInvocationStopwatch = new Stopwatch();
 

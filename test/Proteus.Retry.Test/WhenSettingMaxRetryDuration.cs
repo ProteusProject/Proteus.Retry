@@ -33,8 +33,7 @@ namespace Proteus.Retry.Test
         [Test]
         public void HasMaxRetryDurationReportsIfSet()
         {
-            var policy = new RetryPolicy();
-            policy.MaxRetryDuration = TimeSpan.FromMilliseconds(10);
+            var policy = new RetryPolicy { MaxRetryDuration = TimeSpan.FromMilliseconds(10) };
             Assert.That(policy.HasMaxRetryDuration, Is.True);
         }
 
@@ -54,14 +53,15 @@ namespace Proteus.Retry.Test
 
             Assume.That(MAX_RETRY_DURATION < MAX_RETRIES * SINGLE_INVOCATION_SLEEP_DURATION);
 
-            var policy = new RetryPolicy();
-            policy.MaxRetryDuration = TimeSpan.FromMilliseconds(MAX_RETRY_DURATION);
-            policy.MaxRetries = MAX_RETRIES;
+            var policy = new RetryPolicy
+            {
+                MaxRetryDuration = TimeSpan.FromMilliseconds(MAX_RETRY_DURATION),
+                MaxRetries = MAX_RETRIES
+            };
             policy.RegisterRetriableException<ExpectableTestException>();
 
-            var retry = new Retry(policy);
-            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
-            
+            var retry = new Retry(policy) { Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg) };
+
             var instance = new MaxRetryDurationTestSpy();
 
             Assert.Throws<MaxRetryDurationExpiredException>(() => retry.Invoke(() => instance.MethodThatSleepsThenAlwaysThrowsAfter(SINGLE_INVOCATION_SLEEP_DURATION)));

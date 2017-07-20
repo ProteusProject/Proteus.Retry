@@ -39,8 +39,7 @@ namespace Proteus.Retry.Test
         [Test]
         public void CanSetAndRetrieveExplicitInterval()
         {
-            var policy = new RetryPolicy();
-            policy.RetryDelayInterval = TimeSpan.FromHours(1);
+            var policy = new RetryPolicy { RetryDelayInterval = TimeSpan.FromHours(1) };
 
             Assert.That(policy.NextRetryDelayInterval(), Is.EqualTo(TimeSpan.FromHours(1)));
         }
@@ -48,8 +47,7 @@ namespace Proteus.Retry.Test
         [Test]
         public void CanUseRetryDelayIntervalProvider()
         {
-            var policy = new RetryPolicy();
-            policy.RetryDelayIntervalProvider = () => TimeSpan.FromSeconds(1);
+            var policy = new RetryPolicy { RetryDelayIntervalProvider = () => TimeSpan.FromSeconds(1) };
 
             Assert.That(policy.NextRetryDelayInterval(), Is.EqualTo(TimeSpan.FromSeconds(1)));
         }
@@ -57,8 +55,7 @@ namespace Proteus.Retry.Test
         [Test]
         public void RetryDelayIntervalProviderStrategyOverridesExplicitlySetDelayInterval()
         {
-            var policy = new RetryPolicy();
-            policy.RetryDelayInterval = TimeSpan.FromHours(1);
+            var policy = new RetryPolicy { RetryDelayInterval = TimeSpan.FromHours(1) };
             Assume.That(policy.RetryDelayInterval, Is.EqualTo(TimeSpan.FromHours(1)), "Explicitly-set RetryDelayInterval not found!");
 
             policy.RetryDelayIntervalProvider = () => TimeSpan.FromSeconds(1);
@@ -71,8 +68,7 @@ namespace Proteus.Retry.Test
         {
             var intervalProvider = new TestRetryDelayIntervalProvider();
 
-            var policy = new RetryPolicy();
-            policy.RetryDelayIntervalProvider = () => intervalProvider.DoublePriorInterval();
+            var policy = new RetryPolicy { RetryDelayIntervalProvider = () => intervalProvider.DoublePriorInterval() };
             Assume.That(intervalProvider.Interval, Is.EqualTo(TimeSpan.FromMilliseconds(10)), "initial interval not set to expected TimeSpan");
 
             policy.MaxRetries = 5;

@@ -80,8 +80,7 @@ namespace Proteus.Retry
 
             Logger($"RetryId: {_currentRetryId} - Begin invoking Func {funcName} using {Policy}");
 
-            TReturn returnValue;
-            Invoke(func.Compile(), out returnValue);
+            Invoke(func.Compile(), out TReturn returnValue);
 
             Logger($"RetryId: {_currentRetryId} - Finished invoking Func {funcName} using {Policy}");
 
@@ -103,8 +102,7 @@ namespace Proteus.Retry
             //necessary evil to keep the compiler happy
             // WARNING: we don't do ANYTHING with this out param b/c its content isn't meaningful since this entire code path
             // invokes and Action (with no return value)
-            object returnValue;
-            Invoke(action.Compile(), out returnValue);
+            Invoke(action.Compile(), out object returnValue);
 
             Logger($"RetryId: {_currentRetryId} - Finished invoking Action {actionName} using {Policy}");
 

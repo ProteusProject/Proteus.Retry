@@ -34,9 +34,8 @@ namespace Proteus.Retry.Test
             var policy = new RetryPolicy { MaxRetries = 20 };
             policy.RegisterRetriableException<ExpectableTestException>();
 
-            var retry = new Retry(policy);
+            var retry = new Retry(policy) { Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg) };
 
-            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
 
             var result = retry.Invoke(() => instance.IntReturningMethod(1, "func invoked"));
 

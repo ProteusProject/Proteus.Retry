@@ -34,8 +34,7 @@ namespace Proteus.Retry.Test
         [Test]
         public async Task CanAwaitSuccessfulInvocation()
         {
-            var retry = new Retry();
-            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
+            var retry = new Retry { Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg) };
 
             var instance = new TestSpy();
 
@@ -54,8 +53,7 @@ namespace Proteus.Retry.Test
             policy.RegisterRetriableException<ExpectableTestException>();
             policy.MaxRetries = MAX_RETRIES;
 
-            var retry = new Retry(policy);
-            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
+            var retry = new Retry(policy) { Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg) };
 
             var instance = new TestSpy();
 
@@ -82,8 +80,7 @@ namespace Proteus.Retry.Test
             policy.RegisterRetriableException<ExpectableTestException>();
             policy.MaxRetries = MAX_RETRIES;
 
-            var retry = new Retry(policy);
-            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
+            var retry = new Retry(policy) { Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg) };
 
             var instance = new TestSpy();
 
@@ -108,8 +105,7 @@ namespace Proteus.Retry.Test
             policy.RegisterRetriableException<ExpectableTestException>();
             policy.MaxRetries = MAX_RETRIES;
 
-            var retry = new Retry(policy);
-            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
+            var retry = new Retry(policy) { Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg) };
 
             var instance = new TestSpy();
 
@@ -133,8 +129,7 @@ namespace Proteus.Retry.Test
 
             var instance = new TestSpy();
 
-            var retry = new Retry(policy);
-            retry.Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg);
+            var retry = new Retry(policy) { Logger = msg => LogManager.GetLogger(this.GetType()).Debug(msg) };
 
             try
             {

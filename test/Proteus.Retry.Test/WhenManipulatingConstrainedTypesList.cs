@@ -31,9 +31,7 @@ namespace Proteus.Retry.Test
         {
             Assume.That(typeof(ExpectableTestException).IsSubclassOf(typeof(Exception)), "Unable to validate required inheritance hierarchy.");
 
-            var list = new ConstrainedTypesList<Exception>();
-            list.Add(typeof(Exception));
-            list.Add(typeof(ExpectableTestException));
+            var list = new ConstrainedTypesList<Exception> { typeof(Exception), typeof(ExpectableTestException) };
             list.Insert(0, (typeof(ExpectableTestException)));
             list[0] = (typeof(ExpectableTestException));
 
