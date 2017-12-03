@@ -40,6 +40,15 @@ namespace Proteus.Retry.Test
         }
 
         [Test]
+        public void CanAddTypesImplementingConstrainedTypeInterface()
+        {
+            var list = new ConstrainedTypesList<ITestInterface>();
+            list.Add(typeof(ImplementationOfTestInterface));
+            
+            Assert.That(list, Has.Member(typeof(ImplementationOfTestInterface)), "Cannot successfully add Interface implementing type.");
+        }
+
+        [Test]
         public void CanDefendAgainstAddingTypeNotDerivedFromConstrainedType()
         {
             Assume.That(this.GetType().IsSubclassOf(typeof(Exception)), Is.False, "Unable to validate required inheritance hierarchy.");
@@ -49,6 +58,19 @@ namespace Proteus.Retry.Test
             Assert.Throws<ArgumentException>(() => list.Add(this.GetType()), ".Add(...) method did not prevent adding non-Exception-derived type.");
             Assert.Throws<ArgumentException>(() => list[0] = this.GetType(), "Index[n] method did not prevent adding non-Exception-derived type.");
             Assert.Throws<ArgumentException>(() => list.Insert(0, this.GetType()), "Insert(...) method did not prevent adding non-Exception-derived type.");
+        }
+    }
+
+    public interface ITestInterface
+    {
+        void MyMethod();
+    }
+
+    public class ImplementationOfTestInterface : ITestInterface
+    {
+        public void MyMethod()
+        {
+            throw new NotImplementedException();
         }
     }
 }

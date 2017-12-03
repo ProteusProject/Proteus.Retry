@@ -21,6 +21,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -44,10 +45,38 @@ namespace Proteus.Retry
         /// <exception cref="System.ArgumentException"></exception>
         private void ThrowIfTypeIsNotConstrainedType(Type type)
         {
-            if (type == typeof(TConstraint) || type.GetTypeInfo().IsSubclassOf(typeof(TConstraint)))
-                return;
+            if (ConstraintIsInterface())
+            {
+                if (IsImplementationOfConstraint(type))
+                    return;
+            }
+            else
+            {
+                if (IsSameTypeAsConstraint(type) || IsSubclassOfConstraint(type))
+                    return;
+            }
 
             throw new ArgumentException(string.Format("This instance of Proteus.Retry.ConstrainedTypesList<Type> can only accept {0} or types derived from {0}.", typeof(TConstraint).FullName));
+        }
+
+        private bool IsImplementationOfConstraint(Type type)
+        {
+            return type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(TConstraint));
+        }
+
+        private bool ConstraintIsInterface()
+        {
+            return typeof(TConstraint).GetTypeInfo().IsInterface;
+        }
+
+        private bool IsSubclassOfConstraint(Type type)
+        {
+            return type.GetTypeInfo().IsSubclassOf(typeof(TConstraint));
+        }
+
+        private bool IsSameTypeAsConstraint(Type type)
+        {
+            return type == typeof(TConstraint);
         }
 
         /// <summary>
@@ -63,7 +92,7 @@ namespace Proteus.Retry
             for (int i = 0; i < _inner.Count; i++)
             {
                 builder.Append(_inner[i]);
-                if (i < _inner.Count -1)
+                if (i < _inner.Count - 1)
                 {
                     builder.Append(", ");
                 }
